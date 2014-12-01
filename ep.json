@@ -1,0 +1,22 @@
+{
+  "parts":[
+    {
+      "name": "ep_custom_styles",
+      "hooks": {
+        "handleMessage": "ep_custom_styles/handleMessage",
+        "eejsBlock_scripts": "ep_custom_styles/client",
+        "eejsBlock_globalSettings": "ep_custom_styles/client:eejsBlock_mySettings",
+        "eejsBlock_styles": "ep_custom_styles/client:eejsBlock_styles",
+        "clientVars": "ep_custom_styles/client:clientVars",
+        "expressCreateServer" : "ep_custom_styles/index:registerRoute"
+      },
+      "client_hooks": {
+        "postAceInit":"ep_custom_styles/static/js/ep_custom_styles:postAceInit",
+        "handleClientMessage_CUSTOM":"ep_custom_styles/static/js/ep_custom_styles",
+        "aceDomLinePreProcessLineAttributes": "ep_custom_styles/static/js/ep_custom_styles",
+        "aceAttribsToClasses": "ep_custom_styles/static/js/ep_custom_styles",
+        "aceInitialized": "ep_custom_styles/static/js/ep_custom_styles" 
+      }
+    }
+  ]
+}

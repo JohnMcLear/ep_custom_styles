@@ -1,0 +1,24 @@
+{
+  "name": "ep_custom_styles",
+  "description": "Define custom styles and then apply them to a pad",
+  "version": "0.0.1",
+  "author": {
+    "name": "John Mclear",
+    "email": "john@mclear.co.uk",
+    "url": "http://mclear.co.uk"
+  },
+  "contributors": [{
+    "name": "quenenni",
+    "email": "quenenni@bruxxel.org",
+    "url": "https://github.com/quenenni"
+  }],
+  "dependencies": {
+  },
+  "engines": {
+    "node": ">= 0.4.1"
+  },
+  "repository" : {
+    "type" : "git",
+    "url"  : "https://github.com/JohnMcLear/ep_custom_styles.git"
+  }
+}
