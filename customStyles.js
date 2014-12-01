@@ -17,8 +17,14 @@ exports.customStyles = {
             styleIds.push(styleId);
             console.log("new styleIds", styleIds);
             db.set("custom_styles", styleIds);
+
+            // if PadID is set we have to update the association etc.
             if(padId){
-              db.set("custom_style_association_"+padId, styleIds);
+              db.get("custom_style_association_"+padId, function(err, styleIds){
+                if(!styleIds) styleIds = [];
+                styleIds.push(styleId);
+                db.set("custom_style_association_"+padId, styleIds);
+              });
             }
             cb(null, "All done :)");
           });
@@ -57,6 +63,7 @@ exports.customStyles = {
       console.log("Getting StyleIds for PadId", padId);
       db.get("custom_style_association_"+padId, function(err, value){
         if(err) cb(err);
+console.warn("styles associated with ", padId, value);
         cb(null, value);
         // todo
       });
