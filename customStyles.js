@@ -63,7 +63,7 @@ exports.customStyles = {
       console.log("Getting StyleIds for PadId", padId);
       db.get("custom_style_association_"+padId, function(err, value){
         if(err) cb(err);
-console.warn("styles associated with ", padId, value);
+        // console.warn("styles associated with ", padId, value);
         cb(null, value);
         // todo
       });
