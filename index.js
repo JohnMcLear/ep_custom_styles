@@ -26,26 +26,76 @@ exports.registerRoute = function (hook_name, args, callback) {
     args.app.get('/pluginAPI/'+method, function(req, res) {
       var response = customStyles;
       method = method.replace("customStyles.styles.","");
-      console.warn(customStyles.styles);
-      console.warn(method);
-      customStyles.styles[method](function(err, value){
-        if(err) console.error(err);
-        res.send(value);
-      });
+      // object of requested params = req.query
+
+      if(method === "new"){
+        customStyles.styles[method](req.query.styleId, req.query.css, req.padId, function(err, value){
+          if(err) console.error(err);
+          res.send(value);
+        });
+      }
+
+      if(method === "update"){
+        customStyles.styles[method](req.query.styleId, req.query.css, function(err, value){
+          if(err) console.error(err);
+          res.send(value);
+        });
+      }
+
+      if(method === "globalDisable"){
+        customStyles.styles[method](req.query.styleId, function(err, value){
+          if(err) console.error(err);
+          res.send(value);
+        });
+      }
+
+      if(method === "disable"){
+        customStyles.styles[method](req.query.styleId, req.padId, function(err, value){
+          if(err) console.error(err);
+          res.send(value);
+        });
+      }
+
+      if(method === "delete"){
+        customStyles.styles[method](req.query.styleId, function(err, value){
+          if(err) console.error(err);
+          res.send(value);
+        });
+      }
+
+      if(method === "get"){
+        customStyles.styles[method](req.query.styleId, function(err, value){
+          if(err) console.error(err);
+          res.send(value);
+        });
+      }
+
+      if(method === "stylesForPad"){
+        customStyles.styles[method](req.query.padId, function(err, value){
+          if(err) console.error(err);
+          res.send(value);
+        });
+      }
+
+      if(method === "allStyles"){
+        customStyles.styles[method](function(err, value){
+          if(err) console.error(err);
+          res.send(value);
+        });
+      }
+
+      if(method === "disabledStyles"){
+        customStyles.styles[method](function(err, value){
+          if(err) console.error(err);
+          res.send(value);
+        });
+      }
+
     });
   })
   setEndPoints.map(function(method){
     args.app.post('/api/plugin/'+method, function(req, res) {
     });
   })
-}
-
-/**
- * Database manipulation
- */
-
-// Updates the database with the email record
-setAuthorEmail = function (userInfo, email){
-  db.setSub("globalAuthor:" + userInfo.authorId, ["email"], email);
 }
 

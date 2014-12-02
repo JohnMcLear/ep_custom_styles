@@ -16,6 +16,10 @@ exports.postAceInit = function(hook, context){
     pad.collabClient.sendMessage(message);
   });
 
+  $('body').on('change', '#options-custom-style-name', function(){ 
+    $('#options-custom-style-status').text("");
+  });
+
   $('body').on('change', '#customStyles', function(){
     var value = $(this).val();
     if(!value) return;
@@ -35,12 +39,37 @@ exports.postAceInit = function(hook, context){
 }
 
 exports.handleClientMessage_CUSTOM = function(hook, context){
+  console.log("context", context);
+  // Handles Custom Object Messages
+  if(context.data){
+    context.data = context.data.payload;
+    context.payload.data = context.data.payload;
+  }
+  console.log("context.payload.type", context.payload.type);
+  // Handles Custom Messages
   if(!context.payload) return;
-  if(context.payload.type !== "custom_style") return;
+  var customStyle = (context.payload.type.indexOf("custom_style") === 0);
+  if(!customStyle) return;
   console.log("Got a custom style message from server", context.payload);
+
+  isError = (context.payload.method.indexOf("customStyles.error") === 0);
+
+  if(isError){
+    customStyles.error(context);
+    return;
+  }
+
   var method = context.payload.method.replace("customStyles.styles.","");
   // Perform the related method for this data
-  customStyles.styles[method](context.payload.data);
+  if(context.payload.method === "customStyles.styles.new"){
+    var message = {};
+    message.type = 'customStyles.styles.stylesForPad';
+    message.padId = pad.getPadId();
+    console.log("requesting styles", message);
+    pad.collabClient.sendMessage(message);
+  }else{
+    customStyles.styles[method](context.payload.data);
+  }
 }
 
 /* Deals mostly with responses from the server */
@@ -67,6 +96,7 @@ var customStyles = {
       drawStyle(style);
     },
     new: function(padId, styleId, css){
+      console.log("new", padId, styleId, css)
       // customStyles.drawSelect();
       request('customStyles.styles.new', {
         padId: padId,
@@ -74,8 +104,13 @@ var customStyles = {
         styleId: styleId
       });
     }
+  },
+  error: function(context){
+    console.log(context);
+    if(context.payload.method === "customStyles.error.styleAlreadyExists"){
+      $('#options-custom-style-status').text("Style Name Already Exists, use a different Style Name");
+    }
   }
-
 }
 
 // Requests and Sends information from the socket

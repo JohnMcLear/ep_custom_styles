@@ -12,12 +12,10 @@ exports.eejsBlock_mySettings = function (hook_name, args, cb) {
 };
 
 exports.eejsBlock_styles = function (hook_name, args, cb) {
-  args.content = args.content + '<link href="../static/plugins/ep_custom_styles/static/css/email_notifications.css" rel="stylesheet">';
+  args.content = args.content + '<link href="../static/plugins/ep_custom_styles/static/css/custom_styles.css" rel="stylesheet">';
 };
 
 exports.clientVars = function(hook, context, callback) {
   var pluginSettings = settings.ep_custom_styles;
-  var panelDisplayLocation = (pluginSettings && pluginSettings.panelDisplayLocation)?pluginSettings.panelDisplayLocation:"undefined";
-  // return the setting to the clientVars, sending the value
-  return callback({ "panelDisplayLocation": panelDisplayLocation });
+  return callback({});
 };

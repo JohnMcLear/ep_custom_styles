@@ -21,8 +21,13 @@ exports.handleMessage = function(hook_name, context, callback){
   // Create New Custom Style
   if (message.type == 'customStyles.styles.new' ){
     customStyles.styles.new(message.styleId, message.css, message.padId || false, function(err, val){
-      if(err) console.error(err);
-      console.log("Created new style");
+      if(err){
+        reply(context.client, "customStyles.error.styleAlreadyExists", message.styleId);
+        console.error(err);
+      }else{
+        console.log("Created new style");
+        broadcast(message.padId, message.type, message);
+      }
     });
     callback([null]);
   }
@@ -78,7 +83,9 @@ exports.handleMessage = function(hook_name, context, callback){
   if (message.type == 'customStyles.styles.stylesForPad' ){
     customStyles.styles.stylesForPad(message.padId, function(e, styleIds){
       if(e) console.error(e);
-      reply(context.client, "customStyles.styles.stylesForPad", styleIds);
+      if(styleIds){
+        reply(context.client, "customStyles.styles.stylesForPad", styleIds);
+      }
     });
     callback([null]);
   }
@@ -122,85 +129,20 @@ var reply = function(socket, method, data){
   socket.json.send(blob);
 }
 
-/*
-
-      // CAKE TO DO THIS WILL OVERWRITE EXISTING STYLES
-      // Go ahead and save the style irrespective
-      db.set("custom_style_css:"+name, css);
-
-      // We will change this so that custom_style stores an array
-      // of names of styles IE ["bigFont", "smallPenis"]
-      db.get("custom_style:"+padId, function(err, dbcssNames){
-        if(dbcssNames){
-          dbcssNames.push(name);
-        }else{
-          dbcssNames = [];
-          dbcssNames.push(name);
-        }
-         
-        var css = [];
-        // for each dbcss get the CSS values and send it
-        if(!dbcssNames) return;
-        async.forEach(Object.keys(dbcssNames), function(style){
-          db.get("custom_style_css:"+name, function(err, cssItem){
-            css.push(cssItem);
-          });
-        },function(err ,msg){
-          padMessageHandler.handleCustomObjectMessage({
-            type: "COLLABROOM",
-            data: {
-              type: "CUSTOM",
-              payload: {
-                padId: padId,
-                type: "custom_style_get",
-                css: css,
-                name: name
-              } 
-            }
-          }, false, function(e){
-            if(e) console.error("ERROR", e)
-          });
-  
-          db.set("custom_style:"+padId, dbcssNames);
-        });
-      });
-      // The below line should be in place but it blows up execution for some reason?
-  }
-
-  if (context.message && context.message.data){
-    if (context.message.data.type == 'CUSTOM_STYLE_GET' ) { // if it's a request to update an authors email
-      var padId = context.message.data.padId;
-
-      db.get("custom_style:"+padId, function(err, names){
-
-        // for each dbcss get the CSS values and send it
-        async.forEach(Object.keys(names), function(style){
-          db.get("custom_style:"+style, function(err, names){
-
-          });
-        });
-        console.warn("handle custom object message");
-
-        context.client.json.send({
-          type: "COLLABROOM",
-          data: {
-            type: "CUSTOM",
-            payload: {
-              padId: padId,
-              type: "custom_style_get",
-              names: names,
-              css: css
-            }
-          }
-        });
-
-        console.warn("send shit to user");
-        // The below line should be in place but it blows up execution for some reason?
-        // callback([null]);
-
-
-      });
+var broadcast = function(padId, method, data){
+  padMessageHandler.handleCustomObjectMessage({
+    type: "COLLABROOM",
+    data: {
+      type: "CUSTOM",
+      payload: {
+        padId: padId,
+        type: "custom_style_get",
+        method: method,
+        data: data
+      }
     }
-  }
-};
-*/
+  }, false, function(e){
+    if(e) console.error("ERROR", e)
+  });
+}
+
