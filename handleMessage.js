@@ -21,12 +21,13 @@ exports.handleMessage = function(hook_name, context, callback){
   // Create New Custom Style
   if (message.type == 'customStyles.styles.new' ){
     customStyles.styles.new(message.styleId, message.css, message.padId || false, function(err, val){
+      var request = [message.styleId, message.css, message.padId || false];
       if(err){
-        reply(context.client, "customStyles.error.styleAlreadyExists", message.styleId);
+        reply(context.client, "customStyles.error.styleAlreadyExists", message.styleId, request);
         console.error(err);
       }else{
         console.log("Created new style");
-        broadcast(message.padId, message.type, message);
+        broadcast(message.padId, message.type, message, request);
       }
     });
     callback([null]);
@@ -70,21 +71,22 @@ exports.handleMessage = function(hook_name, context, callback){
 
   // Get the CSS for a style
   if (message.type == 'customStyles.styles.get' ){
-    console.warn("doign a get", message);
+    var request = [message.styleId];
     customStyles.styles.get(message.styleId, function(e, css){
       if(e) console.error(e);
       console.warn("replying", "customStyles.styles.get", css);
-      reply(context.client, "customStyles.styles.get", css);
+      reply(context.client, "customStyles.styles.get", css, request);
     })
     callback([null]);
   }
 
   // Get the Styles associated with a pad
   if (message.type == 'customStyles.styles.stylesForPad' ){
+    var request = [message.padId];
     customStyles.styles.stylesForPad(message.padId, function(e, styleIds){
       if(e) console.error(e);
       if(styleIds){
-        reply(context.client, "customStyles.styles.stylesForPad", styleIds);
+        reply(context.client, "customStyles.styles.stylesForPad", styleIds, request);
       }
     });
     callback([null]);
@@ -111,12 +113,13 @@ exports.handleMessage = function(hook_name, context, callback){
 }
 
 
-var reply = function(socket, method, data){
+var reply = function(socket, method, data, request){
   var blob = {
     type: "COLLABROOM",
     data: {
       type: "CUSTOM",
       payload: {
+        request: request,
         type: "custom_style",
         method: method,
         data: data

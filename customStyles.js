@@ -53,11 +53,9 @@ exports.customStyles = {
       console.log("Getting CSS for Style", styleId);
       db.get("custom_style_css_"+styleId, function(err, value){
         if(err) cb(err);
-        console.warn("here", value);
         cb(null, value);
         // todo
       });
-      
     },
     stylesForPad: function(padId, cb){
       console.log("Getting StyleIds for PadId", padId);

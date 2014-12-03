@@ -14,16 +14,21 @@ exports.postAceInit = function(hook, context){
   if(!pad.plugins) pad.plugins = {};
   pad.plugins.ep_custom_styles = {};
   pad.plugins.ep_custom_styles.styleIds = [];
+  pad.plugins.ep_custom_styles.styles = {};
 
   // Listener events
   $('body').on("click", "#options-custom-style-save", function(){
     var padId = pad.getPadId();
     var styleId = $('#options-custom-style-name').val();
     var css = $('#options-custom-style-css').val();
-    customStyles.styles.new(padId, styleId, css);
+    if(pad.plugins.ep_custom_styles.isUpdating){
+      customStyles.styles.update(padId, styleId, css);
+    }else{
+      customStyles.styles.new(padId, styleId, css);
+    }
     pad.collabClient.sendMessage(message);
     applyCustomStyle(context, styleId, true);
-    padeditbar.toggleDropDown("newCustomStyle");
+    padeditbar.toggleDropDown("customStyle");
   });
 
   // Listen for a click of the paintbrush icon to bring up the popup
@@ -62,11 +67,22 @@ exports.postAceInit = function(hook, context){
   });
 
   $('#customStyles').on('click', '#newStyle', function(){
+    pad.plugins.ep_custom_styles.isUpdating = false;
     padeditbar.toggleDropDown("newCustomStyle");
   });
 
   $('#newCustomStyle').on('click', '#options-custom-style-cancel', function(){
     padeditbar.toggleDropDown("newCustomStyle");
+  });
+
+  $('#availableStyles').on('click', 'p > .editStyle', function(){
+    var styleId = $(this).data("styleid");
+    editStyle(styleId);
+  });
+
+  $('#availableStyles').on('click', 'p > .deleteStyle', function(){
+    var styleId = $(this).data("styleid");
+    deleteStyle(styleId);
   });
 
   var message = {};
@@ -111,7 +127,7 @@ exports.handleClientMessage_CUSTOM = function(hook, context){
     console.log("requesting styles", message);
     pad.collabClient.sendMessage(message);
   }else{
-    customStyles.styles[method](context.payload.data);
+    customStyles.styles[method](context.payload.data, context.payload.request);
   }
 }
 
@@ -120,7 +136,7 @@ var customStyles = {
   data: {
     styles: []
   },
-  drawSelect: function(styleIds){
+  drawSelect: function(styleIds, requestedData){
     pad.plugins.ep_custom_styles.styleIds = styleIds;
     $('#availableStyles').html("");
     $.each(styleIds, function(k,styleId){
@@ -128,28 +144,42 @@ var customStyles = {
       $('#availableStyles').append('<p> \
         <input type=checkbox id="'+styleId+'"> \
         <label for="'+styleId+'">'+styleId+'</label> \
-        -- <span class="editStyle">Edit</span> \
-        -- <span class="deleteStyle">Delete</span> \
+        -- <span data-styleid="'+styleId+'" class="editStyle">Edit</span> \
+        -- <span data-styleid="'+styleId+'" class="deleteStyle">Delete</span> \
       </p>');
     });
   },
   styles: {
-    stylesForPad: function(styleIds){
+    stylesForPad: function(styleIds, requestedData){
       if(styleIds){
         console.log("Getting CSS of StyleIds", styleIds);
-        $.each(styleIds, function(k,styleIds){
-          request("customStyles.styles.get", {styleId: styleIds});
+        $.each(styleIds, function(k,styleId){
+          // pad.plugins.ep_custom_styles.styles[styleId] = styleId;
+          request("customStyles.styles.get", {styleId: styleId});
 	});
         customStyles.drawSelect(styleIds);
       }
     },
-    get: function(style){
+    get: function(style, requestedData){
+      // So this might seem a bit weird..  And it sort of is..
+      // When we reply to the client we tell it the styleId of the style it requested.
+      // This is the requestedData object, we might use it for other things so I kept it vague
+      var styleId = requestedData[0];
+      pad.plugins.ep_custom_styles[styleId] = style;
       drawStyle(style);
     },
     new: function(padId, styleId, css){
       console.log("new", padId, styleId, css)
       // customStyles.drawSelect();
       request('customStyles.styles.new', {
+        padId: padId,
+        css: css,
+        styleId: styleId
+      });
+    },
+    update: function(padId, styleId, css){
+      console.log("update", padId, styleId, css)
+      request('customStyles.styles.update', {
         padId: padId,
         css: css,
         styleId: styleId
@@ -187,7 +217,6 @@ exports.aceAttribsToClasses = function(hook, context){
 
 // Applies a custom Style to a piece of content
 var applyCustomStyle = function(context, styleId, value){
-  console.log("applying style ", styleId, value);
   var rep = {};
   context.ace.callWithAce(function (ace){
     var saveRep = ace.ace_getRep();
@@ -223,3 +252,17 @@ var reDrawSelectedAttributes = function(context){
     // Get Each Available Style
   },'customStyles', true);
 };
+
+var editStyle = function(styleId){
+  padeditbar.toggleDropDown("newCustomStyle");
+  $('#options-custom-style-name').val(styleId);
+  $('#options-custom-style-css').val(pad.plugins.ep_custom_styles[styleId]);
+  pad.plugins.ep_custom_styles.isUpdating = true;
+}
+
+var deleteStyle = function(styleId){
+  var confirmed = confirm("Are you sure you want to delete this style?  This will remove the style for every pad on this Etherpad instance");
+  if(!confirmed) return;
+  request("customStyles.styles.delete", {styleId: styleId});
+  console.log("deleting"+ styleId);  
+}
