@@ -20,10 +20,17 @@ exports.postAceInit = function(hook, context){
     pad.collabClient.sendMessage(message);
   });
 
+  // Listen for a click of the paintbrush icon to bring up the popup
+  $('body').on('click', '.ep_custom_styles', function(){
+    padeditbar.toggleDropDown("customStyles");
+  });
+
+  // When the Style ID is changed
   $('body').on('change', '#options-custom-style-name', function(){ 
     $('#options-custom-style-status').text("");
   });
 
+  // When the style CSS is changed we lint it and provide feedback
   $('body').on('keyup', '#options-custom-style-css', function(){ 
     if( $('#options-custom-style-css').val().length === 0 ) return;
     var results = CSSLint.verify($('#options-custom-style-css').val());
@@ -39,6 +46,7 @@ exports.postAceInit = function(hook, context){
     console.log(results);
   });
 
+  // This can be trashed.
   $('body').on('change', '#customStyles', function(){
     var value = $(this).val();
     if(!value) return;
@@ -55,6 +63,10 @@ exports.postAceInit = function(hook, context){
   message.padId = pad.getPadId();
   console.log("requesting styles", message);
   pad.collabClient.sendMessage(message);
+
+  // Register the top bar
+  padeditbar.registerDropdownCommand("customStyles");
+  // This is called with padeditbar.toggleDropDown("customStyles")
 }
 
 exports.handleClientMessage_CUSTOM = function(hook, context){

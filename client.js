@@ -6,7 +6,12 @@ exports.eejsBlock_scripts = function (hook_name, args, cb) {
   return cb();
 };
 
-exports.eejsBlock_mySettings = function (hook_name, args, cb) {
+exports.eejsBlock_editbarMenuLeft = function (hook_name, args, cb) {
+  args.content = args.content + eejs.require("ep_custom_styles/templates/editbarMenuLeft.ejs", {}, module);
+  return cb();
+};
+
+exports.eejsBlock_body = function (hook_name, args, cb) {
   args.content = args.content + eejs.require('ep_custom_styles/templates/custom_style_settings.ejs');
   return cb();
 };
