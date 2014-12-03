@@ -1,0 +1,111 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/usr/local/bin/node', '/usr/local/bin/npm', 'publish', '-f' ]
+2 info using npm@1.4.28
+3 info using node@v0.10.33
+4 warn using --force I sure hope you know what you are doing.
+5 verbose publish [ '.' ]
+6 verbose cache add [ '.', null ]
+7 verbose cache add name=undefined spec="." args=[".",null]
+8 verbose parsed url { protocol: null,
+8 verbose parsed url   slashes: null,
+8 verbose parsed url   auth: null,
+8 verbose parsed url   host: null,
+8 verbose parsed url   port: null,
+8 verbose parsed url   hostname: null,
+8 verbose parsed url   hash: null,
+8 verbose parsed url   search: null,
+8 verbose parsed url   query: null,
+8 verbose parsed url   pathname: '.',
+8 verbose parsed url   path: '.',
+8 verbose parsed url   href: '.' }
+9 silly lockFile 3a52ce78- .
+10 verbose lock . /home/jose/.npm/3a52ce78-.lock
+11 verbose tar pack [ '/home/jose/.npm/ep_custom_styles/0.0.1/package.tgz', '.' ]
+12 verbose tarball /home/jose/.npm/ep_custom_styles/0.0.1/package.tgz
+13 verbose folder .
+14 info prepublish ep_custom_styles@0.0.1
+15 silly lockFile 1f1177db-tar tar://.
+16 verbose lock tar://. /home/jose/.npm/1f1177db-tar.lock
+17 silly lockFile 59dee6cc--custom-styles-0-0-1-package-tgz tar:///home/jose/.npm/ep_custom_styles/0.0.1/package.tgz
+18 verbose lock tar:///home/jose/.npm/ep_custom_styles/0.0.1/package.tgz /home/jose/.npm/59dee6cc--custom-styles-0-0-1-package-tgz.lock
+19 silly lockFile 1f1177db-tar tar://.
+20 silly lockFile 1f1177db-tar tar://.
+21 silly lockFile 59dee6cc--custom-styles-0-0-1-package-tgz tar:///home/jose/.npm/ep_custom_styles/0.0.1/package.tgz
+22 silly lockFile 59dee6cc--custom-styles-0-0-1-package-tgz tar:///home/jose/.npm/ep_custom_styles/0.0.1/package.tgz
+23 silly lockFile 1ee6c5ba-m-ep-custom-styles-0-0-1-package /home/jose/.npm/ep_custom_styles/0.0.1/package
+24 verbose lock /home/jose/.npm/ep_custom_styles/0.0.1/package /home/jose/.npm/1ee6c5ba-m-ep-custom-styles-0-0-1-package.lock
+25 silly lockFile 1ee6c5ba-m-ep-custom-styles-0-0-1-package /home/jose/.npm/ep_custom_styles/0.0.1/package
+26 silly lockFile 1ee6c5ba-m-ep-custom-styles-0-0-1-package /home/jose/.npm/ep_custom_styles/0.0.1/package
+27 silly lockFile 3a52ce78- .
+28 silly lockFile 3a52ce78- .
+29 silly publish { name: 'ep_custom_styles',
+29 silly publish   description: 'Define custom styles and then apply them to a pad',
+29 silly publish   version: '0.0.1',
+29 silly publish   author:
+29 silly publish    { name: 'John Mclear',
+29 silly publish      email: 'john@mclear.co.uk',
+29 silly publish      url: 'http://mclear.co.uk' },
+29 silly publish   contributors:
+29 silly publish    [ { name: 'quenenni',
+29 silly publish        email: 'quenenni@bruxxel.org',
+29 silly publish        url: 'https://github.com/quenenni' } ],
+29 silly publish   dependencies: {},
+29 silly publish   engines: { node: '>= 0.4.1' },
+29 silly publish   repository:
+29 silly publish    { type: 'git',
+29 silly publish      url: 'https://github.com/JohnMcLear/ep_custom_styles.git' },
+29 silly publish   readme: '# Description\nThis plugin allows for a user to define custom styles.\n\nIt is not production ready.\n',
+29 silly publish   readmeFilename: 'README.md',
+29 silly publish   gitHead: 'cb68b2c397cd6627340dd0f3dd8dc9052409ce9c',
+29 silly publish   bugs: { url: 'https://github.com/JohnMcLear/ep_custom_styles/issues' },
+29 silly publish   homepage: 'https://github.com/JohnMcLear/ep_custom_styles',
+29 silly publish   _id: 'ep_custom_styles@0.0.1',
+29 silly publish   scripts: {},
+29 silly publish   _shasum: 'c85fad8cde752fb0d1630a0fff6cfb97896ce6d0',
+29 silly publish   _from: '.' }
+30 verbose request where is /ep_custom_styles
+31 verbose request registry https://registry.npmjs.org/
+32 verbose request id 3ae03ff2ccb9d732
+33 verbose url raw /ep_custom_styles
+34 verbose url resolving [ 'https://registry.npmjs.org/', './ep_custom_styles' ]
+35 verbose url resolved https://registry.npmjs.org/ep_custom_styles
+36 verbose request where is https://registry.npmjs.org/ep_custom_styles
+37 info trying registry request attempt 1 at 02:36:08
+38 http PUT https://registry.npmjs.org/ep_custom_styles
+39 http 403 https://registry.npmjs.org/ep_custom_styles
+40 verbose headers { date: 'Wed, 03 Dec 2014 02:36:10 GMT',
+40 verbose headers   server: 'CouchDB/1.5.0 (Erlang OTP/R16B03)',
+40 verbose headers   'content-type': 'application/json',
+40 verbose headers   'cache-control': 'max-age=60',
+40 verbose headers   'content-length': '2546',
+40 verbose headers   'accept-ranges': 'bytes',
+40 verbose headers   via: '1.1 varnish',
+40 verbose headers   'x-served-by': 'cache-ams4138-AMS',
+40 verbose headers   'x-cache': 'MISS',
+40 verbose headers   'x-cache-hits': '0',
+40 verbose headers   'x-timer': 'S1417574169.253696,VS0,VE1114',
+40 verbose headers   'keep-alive': 'timeout=10, max=50',
+40 verbose headers   connection: 'Keep-Alive' }
+41 error publish Failed PUT 403
+42 error Error: forbidden cannot modify pre-existing version: 0.0.1
+42 error old={"name":"ep_custom_styles","description":"Define custom styles and then apply them to a pad","version":"0.0.1","author":{"name":"John Mclear","email":"john@mclear.co.uk","url":"http://mclear.co.uk"},"contributors":[{"name":"quenenni","email":"quenenni@bruxxel.org","url":"https://github.com/quenenni"}],"dependencies":{},"engines":{"node":">= 0.4.1"},"repository":{"type":"git","url":"https://github.com/JohnMcLear/ep_custom_styles.git"},"gitHead":"0265702145405dcf13889754c57bc425b1da10b2","bugs":{"url":"https://github.com/JohnMcLear/ep_custom_styles/issues"},"homepage":"https://github.com/JohnMcLear/ep_custom_styles","_id":"ep_custom_styles@0.0.1","scripts":{},"_shasum":"635fefdecafa3010d810dca4696116998b6e1255","_from":".","_npmVersion":"1.4.28","_npmUser":{"name":"johnyma22","email":"john@mclear.co.uk"},"maintainers":[{"name":"johnyma22","email":"john@mclear.co.uk"}],"dist":{"shasum":"635fefdecafa3010d810dca4696116998b6e1255","tarball":"http://registry.npmjs.org/ep_custom_styles/-/ep_custom_styles-0.0.1.tgz"}}
+42 error new={"name":"ep_custom_styles","description":"Define custom styles and then apply them to a pad","version":"0.0.1","author":{"name":"John Mclear","email":"john@mclear.co.uk","url":"http://mclear.co.uk"},"contributors":[{"name":"quenenni","email":"quenenni@bruxxel.org","url":"https://github.com/quenenni"}],"dependencies":{},"engines":{"node":">= 0.4.1"},"repository":{"type":"git","url":"https://github.com/JohnMcLear/ep_custom_styles.git"},"readme":"# Description\u000aThis plugin allows for a user to define custom styles.\u000a\u000aIt is not production ready.\u000a","readmeFilename":"README.md","gitHead":"cb68b2c397cd6627340dd0f3dd8dc9052409ce9c","bugs":{"url":"https://github.com/JohnMcLear/ep_custom_styles/issues"},"homepage":"https://github.com/JohnMcLear/ep_custom_styles","_id":"ep_custom_styles@0.0.1","scripts":{},"_shasum":"c85fad8cde752fb0d1630a0fff6cfb97896ce6d0","_from":".","_npmVersion":"1.4.28","_npmUser":{"name":"johnyma22","email":"john@mclear.co.uk"},"maintainers":[{"name":"johnyma22","email":"john@mclear.co.uk"}],"dist":{"shasum":"c85fad8cde752fb0d1630a0fff6cfb97896ce6d0","tarball":"http://registry.npmjs.org/ep_custom_styles/-/ep_custom_styles-0.0.1.tgz"}}: ep_custom_styles
+42 error     at RegClient.<anonymous> (/usr/local/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:308:14)
+42 error     at Request._callback (/usr/local/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:246:65)
+42 error     at Request.self.callback (/usr/local/lib/node_modules/npm/node_modules/request/request.js:236:22)
+42 error     at Request.emit (events.js:98:17)
+42 error     at Request.<anonymous> (/usr/local/lib/node_modules/npm/node_modules/request/request.js:1142:14)
+42 error     at Request.emit (events.js:117:20)
+42 error     at IncomingMessage.<anonymous> (/usr/local/lib/node_modules/npm/node_modules/request/request.js:1096:12)
+42 error     at IncomingMessage.emit (events.js:117:20)
+42 error     at _stream_readable.js:943:16
+42 error     at process._tickCallback (node.js:419:13)
+43 error If you need help, you may report this *entire* log,
+43 error including the npm and node versions, at:
+43 error     <http://github.com/npm/npm/issues>
+44 error System Linux 3.13.0-40-generic
+45 error command "/usr/local/bin/node" "/usr/local/bin/npm" "publish" "-f"
+46 error cwd /home/jose/etherpad-lite/node_modules/ep_custom_styles
+47 error node -v v0.10.33
+48 error npm -v 1.4.28
+49 verbose exit [ 1, true ]

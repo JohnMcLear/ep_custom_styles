@@ -1,4 +1,5 @@
       var db = require('ep_etherpad-lite/node/db/DB').db,
+          fs = require('fs'),
        async = require('../../src/node_modules/async'),
     settings = require('../../src/node/utils/Settings'),
 customStyles = require('./customStyles').customStyles;
@@ -22,9 +23,22 @@ var setEndPoints = [
 ];
 
 exports.registerRoute = function (hook_name, args, callback) {
+
+  // Need to pass auth!
+  var apikey = fs.readFileSync("./APIKEY.txt","utf8");
+  console.warn("apikey", apikey);
+
   getEndPoints.map(function(method){
     args.app.get('/pluginAPI/'+method, function(req, res) {
       var response = customStyles;
+
+      if(req.query.apikey !== apikey){
+        console.warn("ep_custom_styles apikey wrong for API");
+        res.statusCode = 401;
+        res.send({code: 4, message: "no or wrong API Key", data: null});
+        return;
+      }
+
       method = method.replace("customStyles.styles.","");
       // object of requested params = req.query
 
@@ -72,6 +86,13 @@ exports.registerRoute = function (hook_name, args, callback) {
 
       if(method === "stylesForPad"){
         customStyles.styles[method](req.query.padId, function(err, value){
+          if(err) console.error(err);
+          res.send(value);
+        });
+      }
+
+      if(method === "setStylesForPad"){
+        customStyles.styles[method](req.query.padId, styleIds, function(err, value){
           if(err) console.error(err);
           res.send(value);
         });

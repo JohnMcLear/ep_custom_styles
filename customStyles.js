@@ -69,6 +69,10 @@ exports.customStyles = {
       });
 
     },
+    setStylesForPad: function(padId, styleIds, cb){
+      console.log("Setting StyleIds for PadId", padId, styleIds);
+      db.set("custom_style_association_"+padId, styleIds);
+    },
     allStyles: function(cb){
       console.log("Getting all available Styles");
       db.get("custom_styles", function(err, value){

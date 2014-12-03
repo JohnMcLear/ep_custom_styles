@@ -1,7 +1,7 @@
 {
   "name": "ep_custom_styles",
   "description": "Define custom styles and then apply them to a pad",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": {
     "name": "John Mclear",
     "email": "john@mclear.co.uk",
