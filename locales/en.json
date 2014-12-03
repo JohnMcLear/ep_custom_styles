@@ -1,5 +1,6 @@
 { 
 "ep_custom_styles.createNewStyle": "Create new Style", 
 "ep_custom_styles.styleName": "Style Name", 
-"ep_custom_styles.save": "Save"
+"ep_custom_styles.save": "Save",
+"ep_custom_styles.cancel": "Cancel"
 }

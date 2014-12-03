@@ -106,11 +106,15 @@ exports.handleClientMessage_CUSTOM = function(hook, context){
 /* Deals mostly with responses from the server */
 var customStyles = {
   drawSelect: function(styleIds){
-    if($('#customStyles').length !== 0) return; // Don't append if already visible
-    // console.log("Drawing select box for Styles", styleIds);
-    $('.menu_left').append("<li><select id='customStyles'><option value=0>Custom Value</option></select></li>");
+    console.log("Appending styles to UI", styleIds);
     $.each(styleIds, function(k,styleId){
-      $('#customStyles').append($('<option>', { value : styleId }).text(styleId)); 
+      $('#availableStyles').append('<p> \
+        <input type=checkbox id="'+styleId+'"> \
+        <label for="'+styleId+'">'+styleId+'</label> \
+        -- <span class="editStyle">Edit</span> \
+        -- <span class="deleteStyle">Delete</span> \
+      </p>');
+      // $('#customStyles').append($('<option>', { value : styleId }).text(styleId)); 
     });
   },
   styles: {
