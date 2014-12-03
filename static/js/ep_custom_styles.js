@@ -23,6 +23,7 @@ exports.postAceInit = function(hook, context){
     customStyles.styles.new(padId, styleId, css);
     pad.collabClient.sendMessage(message);
     applyCustomStyle(context, styleId, true);
+    padeditbar.toggleDropDown("newCustomStyle");
   });
 
   // Listen for a click of the paintbrush icon to bring up the popup
@@ -51,14 +52,21 @@ exports.postAceInit = function(hook, context){
     }
   });
 
-  // This can be trashed.
+  // When the checkbox is checked apply the style
   $('#availableStyles').on('change', 'p > input', function(){
     var styleId = $(this).context.id;
     var value = $(this).context.checked;
     if(!styleId) return;
-
     applyCustomStyle(context, styleId, value);
     $(this).val(0);
+  });
+
+  $('#customStyles').on('click', '#newStyle', function(){
+    padeditbar.toggleDropDown("newCustomStyle");
+  });
+
+  $('#newCustomStyle').on('click', '#options-custom-style-cancel', function(){
+    padeditbar.toggleDropDown("newCustomStyle");
   });
 
   var message = {};
@@ -67,9 +75,10 @@ exports.postAceInit = function(hook, context){
   console.log("requesting styles", message);
   pad.collabClient.sendMessage(message);
 
-  // Register the top bar
+  // Register the top bar and new style dropdown
   padeditbar.registerDropdownCommand("customStyles");
-  // This is called with padeditbar.toggleDropDown("customStyles")
+  padeditbar.registerDropdownCommand("newCustomStyle");
+  // This is called with padeditbar.toggleDropDown("customStyles") etc.
 }
 
 exports.handleClientMessage_CUSTOM = function(hook, context){
@@ -112,11 +121,8 @@ var customStyles = {
     styles: []
   },
   drawSelect: function(styleIds){
-    console.warn("HERE");
-    console.log("Appending styles to UI", styleIds);
-    console.log(window);
     pad.plugins.ep_custom_styles.styleIds = styleIds;
-    console.log(customStyles.data.styles);
+    $('#availableStyles').html("");
     $.each(styleIds, function(k,styleId){
       console.log("pushing", styleId);
       $('#availableStyles').append('<p> \
@@ -125,7 +131,6 @@ var customStyles = {
         -- <span class="editStyle">Edit</span> \
         -- <span class="deleteStyle">Delete</span> \
       </p>');
-      // $('#customStyles').append($('<option>', { value : styleId }).text(styleId)); 
     });
   },
   styles: {
@@ -171,7 +176,6 @@ var drawStyle = function(style){
   var inner = $('iframe[name="ace_outer"]').contents().find('iframe[name="ace_inner"]');
   style = style.replace(".","-"); // BAD TODO CAKE
   inner.contents().find("head").append("<style>.customStyles"+style+"</style>");
-  console.log("appended style", style);	
 }
 
 // Our Custom Style attribute will result in a customStyle:styleId class
@@ -192,12 +196,11 @@ var applyCustomStyle = function(context, styleId, value){
   },'customStyles', true);
 
   if (rep.selStart[0] == rep.selEnd[0] && rep.selStart[1] == rep.selEnd[1]) {
-    console.log("nothing selected");
+    // console.log("nothing selected");
     return;
   }
 
   context.ace.callWithAce(function (ace){
-    console.log("setting with rep", styleId);
     ace.ace_performSelectionChange(rep.selStart,rep.selEnd,true);
     ace.ace_setAttributeOnSelection('customStyles-'+styleId, value);
   },'customStyles', true);
@@ -209,12 +212,9 @@ var reDrawSelectedAttributes = function(context){
     if(rep.selStart[0] == rep.selEnd[0] && rep.selEnd[1] == rep.selStart[1]){
       return; // don't perform if we don't have anything selected
     }
-    console.log(pad.plugins.ep_custom_styles.styleIds);
     $.each(pad.plugins.ep_custom_styles.styleIds, function(k,v){
       var attrIsApplied = ace.ace_getAttributeOnSelection("customStyles-"+v);
-      console.log("attrIsApplied", attrIsApplied, v)
-      if(attrIsApplied){
-        console.log("Setting "+v +" to enabled");
+      if(attrIsApplied){ // attribute is applied to this selection
         $('#'+v).prop("checked", true);
       }else{
         $('#'+v).prop("checked", false);

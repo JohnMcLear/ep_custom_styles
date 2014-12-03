@@ -1,19 +1,27 @@
-<div id="customStyles" class="popup">
+<div id="customStyles" class="popup customStylePopup">
 <p>
   <h3>Available Styles</h3>
   <div id="availableStyles"></div>
-  <h3 data-l10n-id="ep_custom_styles.createNewStyle"></h3>
-  <label for="options-custom-style-name" data-l10n-id="ep_custom_styles.styleName">Style Name</label>
-  <input type="text" id="options-custom-style-name">
-  <p><label for="options-custom-style-css">CSS</label></p>
-  <textarea rows=4 id="options-custom-style-css" style="width:100%;font-family:monospace" placeholder=".test{color:orange}"></textarea>
-  <p><label for="options-custom-style-lint">Lint Output</label></p>
-  <div id="options-custom-style-lint"></div>
-  <p>
-  <button id="options-custom-style-save" data-l10n-id="ep_custom_styles.save">Save</button>
-  <button id="options-custom-style-cancel" data-l10n-id="ep_custom_styles.cancel">Cancel</button>
-  <p id="options-custom-style-status"></p>
-  </p>
+
+  <button data-l10n-id="ep_custom_styles.createNewStyle" id="newStyle">Create New Style</button>
 </p>
+</div>
+
+<div id="newCustomStyle" class="popup customStylePopup">
+  <h3 data-l10n-id="ep_custom_styles.createNewStyle" id="newStyle"></h3>
+  <div id="newStyle"></div>
+    <label for="options-custom-style-name" data-l10n-id="ep_custom_styles.styleName">Style Name</label>
+    <input type="text" id="options-custom-style-name">
+    <p><label for="options-custom-style-css">CSS</label></p>
+    <textarea rows=4 id="options-custom-style-css" style="width:100%;font-family:monospace" placeholder=".test{color:orange}"></textarea>
+    <p><label for="options-custom-style-lint">Lint Output</label></p>
+    <div id="options-custom-style-lint"></div>
+
+    <p>
+      <button id="options-custom-style-save" data-l10n-id="ep_custom_styles.save">Save</button>
+      <button id="options-custom-style-cancel" data-l10n-id="ep_custom_styles.cancel">Cancel</button>
+      <p id="options-custom-style-status"></p>
+    </p>
+  </div>
 </div>
 
