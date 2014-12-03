@@ -98,7 +98,6 @@ exports.postAceInit = function(hook, context){
 }
 
 exports.handleClientMessage_CUSTOM = function(hook, context){
-  // console.log("context", context);
   // Handles Custom Object Messages
   if(context.data){
     context.data = context.data.payload;
@@ -136,28 +135,37 @@ var customStyles = {
   data: {
     styles: []
   },
-  drawSelect: function(styleIds, requestedData){
-    pad.plugins.ep_custom_styles.styleIds = styleIds;
+  drawSelect: function(){
+    // pad.plugins.ep_custom_styles.styleIds = styleIds;
+    var styleIds = pad.plugins.ep_custom_styles.styleIds;
     $('#availableStyles').html("");
     $.each(styleIds, function(k,styleId){
-      console.log("pushing", styleId);
-      $('#availableStyles').append('<p> \
-        <input type=checkbox id="'+styleId+'"> \
-        <label for="'+styleId+'">'+styleId+'</label> \
-        -- <span data-styleid="'+styleId+'" class="editStyle">Edit</span> \
-        -- <span data-styleid="'+styleId+'" class="deleteStyle">Delete</span> \
-      </p>');
+
+      // If it's not an empty class then don't draw it.
+      console.log("sID", pad.plugins.ep_custom_styles);
+      var WTF = pad.plugins.ep_custom_styles["stest"];
+      console.log("WTF", WTF);
+      if(pad.plugins.ep_custom_styles[styleId]){
+// above is broken cake
+
+        console.log("pushing", styleId);
+        $('#availableStyles').append('<p> \
+          <input type=checkbox id="'+styleId+'"> \
+          <label for="'+styleId+'">'+styleId+'</label> \
+          -- <span data-styleid="'+styleId+'" class="editStyle">Edit</span> \
+          -- <span data-styleid="'+styleId+'" class="deleteStyle">Delete</span> \
+        </p>');
+      }
     });
   },
   styles: {
     stylesForPad: function(styleIds, requestedData){
       if(styleIds){
+        pad.plugins.ep_custom_styles.styleIds = styleIds;
         console.log("Getting CSS of StyleIds", styleIds);
         $.each(styleIds, function(k,styleId){
-          // pad.plugins.ep_custom_styles.styles[styleId] = styleId;
           request("customStyles.styles.get", {styleId: styleId});
 	});
-        customStyles.drawSelect(styleIds);
       }
     },
     get: function(style, requestedData){
@@ -167,6 +175,7 @@ var customStyles = {
       var styleId = requestedData[0];
       pad.plugins.ep_custom_styles[styleId] = style;
       drawStyle(style);
+      customStyles.drawSelect();
     },
     new: function(padId, styleId, css){
       console.log("new", padId, styleId, css)
@@ -176,6 +185,7 @@ var customStyles = {
         css: css,
         styleId: styleId
       });
+      customStyles.drawSelect();
     },
     update: function(padId, styleId, css){
       console.log("update", padId, styleId, css)

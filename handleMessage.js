@@ -37,6 +37,7 @@ exports.handleMessage = function(hook_name, context, callback){
   if (message.type == 'customStyles.styles.update' ){
     customStyles.styles.update(message.styleId, message.css, function(err, cb){
       if(err) console.error(err);
+//      broadcast(message.styleId, message.css, message, request);
       cb();
     });
     callback([null]);

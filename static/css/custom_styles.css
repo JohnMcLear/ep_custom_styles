@@ -16,3 +16,9 @@
 .lintokay{
   color:green;
 }
+.editStyle{
+  cursor:pointer;
+}
+.deleteStyle{
+  cursor:pointer;
+}

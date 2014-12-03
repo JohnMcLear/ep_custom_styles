@@ -6,6 +6,7 @@ exports.customStyles = {
     new: function(styleId, css, padId, cb){
       console.log("Creating new Style", styleId, css, padId || false);
       db.get("custom_style_css_"+styleId, function(err, alreadyExists){
+        console.warn("alreadyExists", alreadyExists);
         if(alreadyExists){
           console.error("StyleId already exists", styleId);
           return cb("alreadyExists");
@@ -14,16 +15,23 @@ exports.customStyles = {
           db.get("custom_styles", function(err, styleIds){
             if(err) console.error(err);
             if(!styleIds) styleIds = [];
-            styleIds.push(styleId);
-            console.log("new styleIds", styleIds);
-            db.set("custom_styles", styleIds);
+
+            // check to see if this value already exists..
+            // if it doesn't already exist then write it to the array
+            if(styleIds.indexOf(styleId) === -1){
+              styleIds.push(styleId);
+              console.log("new styleIds", styleIds);
+              db.set("custom_styles", styleIds);
+            }
 
             // if PadID is set we have to update the association etc.
             if(padId){
               db.get("custom_style_association_"+padId, function(err, styleIds){
                 if(!styleIds) styleIds = [];
-                styleIds.push(styleId);
-                db.set("custom_style_association_"+padId, styleIds);
+                if(styleIds.indexOf(styleId) === -1){
+                  styleIds.push(styleId);
+                  db.set("custom_style_association_"+padId, styleIds);
+                }
               });
             }
             cb(null, "All done :)");
