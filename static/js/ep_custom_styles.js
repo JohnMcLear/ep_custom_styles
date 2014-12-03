@@ -43,17 +43,31 @@ exports.postAceInit = function(hook, context){
     for (i=0, len=messages.length; i < len; i++) {
       lintLog(messages[i].message + " (line " + messages[i].line + ", col " + messages[i].col + ")", messages[i].type);
     }
-    console.log(results);
   });
 
   // This can be trashed.
-  $('body').on('change', '#customStyles', function(){
-    var value = $(this).val();
-    if(!value) return;
+  $('#availableStyles').on('change', 'p > input', function(){
+    var styleId = $(this).context.id;
+    var value = $(this).context.checked;
+    if(!styleId) return;
 
-    context.ace.callWithAce(function(ace){
-      ace.ace_doInsertCustomStyles(value);
-    },'customStyles' , true);
+    var rep = {};
+    context.ace.callWithAce(function (ace){
+      var saveRep = ace.ace_getRep();
+      rep.selStart = saveRep.selStart;
+      rep.selEnd = saveRep.selEnd;
+    },'customStyles', true);
+
+    if (rep.selStart[0] == rep.selEnd[0] && rep.selStart[1] == rep.selEnd[1]) {
+      console.log("nothing selected");
+      return;
+    }
+
+    context.ace.callWithAce(function (ace){
+console.log("setting with rep", styleId);
+      ace.ace_performSelectionChange(rep.selStart,rep.selEnd,true);
+      ace.ace_setAttributeOnSelection('customStyles-'+styleId, value);
+    },'customStyles', true);
 
     $(this).val(0);
   });
@@ -70,18 +84,18 @@ exports.postAceInit = function(hook, context){
 }
 
 exports.handleClientMessage_CUSTOM = function(hook, context){
-  console.log("context", context);
+  // console.log("context", context);
   // Handles Custom Object Messages
   if(context.data){
     context.data = context.data.payload;
     context.payload.data = context.data.payload;
   }
-  console.log("context.payload.type", context.payload.type);
+  // console.log("context.payload.type", context.payload.type);
   // Handles Custom Messages
   if(!context.payload) return;
   var customStyle = (context.payload.type.indexOf("custom_style") === 0);
   if(!customStyle) return;
-  console.log("Got a custom style message from server", context.payload);
+  // console.log("Got a custom style message from server", context.payload);
 
   isError = (context.payload.method.indexOf("customStyles.error") === 0);
 
@@ -158,57 +172,14 @@ var request = function(method, data){
 
 var drawStyle = function(style){
   var inner = $('iframe[name="ace_outer"]').contents().find('iframe[name="ace_inner"]');
-  inner.contents().find("head").append("<style>"+style+"</style>");
-  // console.log("appended style", style);	
+  style = style.replace(".","-"); // BAD TODO CAKE
+  inner.contents().find("head").append("<style>.customStyles"+style+"</style>");
+  console.log("appended style", style);	
 }
-
-// Find out which lines are selected and assign them the CustomStyles attribute.
-// Passing a level >= 0 will set a CustomStyles on the selected lines, level === 0 
-// will remove it
-function doInsertCustomStyles(styleId){
-  var rep = this.rep;
-  var documentAttributeManager = this.documentAttributeManager;
-
-  if (!(rep.selStart && rep.selEnd)){
-    return;
-  }
-  
-  var firstLine, lastLine;
-  
-  firstLine = rep.selStart[0];
-  lastLine = Math.max(firstLine, rep.selEnd[0] - ((rep.selEnd[1] === 0) ? 1 : 0));
-  _(_.range(firstLine, lastLine + 1)).each(function(i){
-    if(styleId !== 0){
-      documentAttributeManager.setAttributeOnLine(i, 'customStyle', styleId);
-    }else{
-      documentAttributeManager.removeAttributeOnLine(i, 'customStyle');
-    }
-  });
-}
-
-// Once ace is initialized, we set ace_doInsertCustomStyles and bind it to the context
-exports.aceInitialized = function(hook, context){
-  var editorInfo = context.editorInfo;
-  editorInfo.ace_doInsertCustomStyles = _(doInsertCustomStyles).bind(context);
-}
-
-// Here we convert the class align:h1 into a tag
-exports.aceDomLinePreProcessLineAttributes = function(name, context){
-  var cls = context.cls;
-  var domline = context.domline;
-  var customStyleType = /(?:^| )customStyle:([A-Za-z0-9]*)/.exec(cls);
-  // customStyleType = customStyleType[0].replace(":","-");
-  var modifier = {
-    preHtml: '<div class="'+customStyleType[1]+'">',
-    postHtml: '</div>',
-    processedMarker: true
-  };
-  return [modifier];
-};
 
 // Our Custom Style attribute will result in a customStyle:styleId class
 exports.aceAttribsToClasses = function(hook, context){
-  if(context.key == 'customStyle'){
-    return ['customStyle:' + context.value ];
+  if(context.key.indexOf("customStyles") > -1){
+    return [context.key];
   }
 }

@@ -14,9 +14,7 @@
       "client_hooks": {
         "postAceInit":"ep_custom_styles/static/js/ep_custom_styles:postAceInit",
         "handleClientMessage_CUSTOM":"ep_custom_styles/static/js/ep_custom_styles",
-        "aceDomLinePreProcessLineAttributes": "ep_custom_styles/static/js/ep_custom_styles",
-        "aceAttribsToClasses": "ep_custom_styles/static/js/ep_custom_styles",
-        "aceInitialized": "ep_custom_styles/static/js/ep_custom_styles" 
+        "aceAttribsToClasses": "ep_custom_styles/static/js/ep_custom_styles"
       }
     }
   ]
