@@ -6,6 +6,10 @@ if(typeof exports == 'undefined'){
   var exports = this['mymodule'] = {};
 }
 
+var lintLog = function(value, level){
+  $('#options-custom-style-lint').append("<span class=\"lint" + level + "\">" + value.replace(/ /g, "&nbsp;") + "</span><br>");
+}
+
 exports.postAceInit = function(hook, context){
   // Listener events
   $('body').on("click", "#options-custom-style-save", function(){
@@ -18,6 +22,21 @@ exports.postAceInit = function(hook, context){
 
   $('body').on('change', '#options-custom-style-name', function(){ 
     $('#options-custom-style-status').text("");
+  });
+
+  $('body').on('keyup', '#options-custom-style-css', function(){ 
+    if( $('#options-custom-style-css').val().length === 0 ) return;
+    var results = CSSLint.verify($('#options-custom-style-css').val());
+    var messages = results.messages;
+    if(messages.length === 0){
+      $('#options-custom-style-lint').html("<span class='lintokay'>OK</span>");
+    }else{
+      $('#options-custom-style-lint').html("");
+    }
+    for (i=0, len=messages.length; i < len; i++) {
+      lintLog(messages[i].message + " (line " + messages[i].line + ", col " + messages[i].col + ")", messages[i].type);
+    }
+    console.log(results);
   });
 
   $('body').on('change', '#customStyles', function(){

@@ -66,3 +66,12 @@
 #options-custom-style-status{
   color:red;
 }
+.linterror{
+  color:red;
+}
+.lintwarning{
+  color:orange;
+}
+.lintokay{
+  color:green;
+}
