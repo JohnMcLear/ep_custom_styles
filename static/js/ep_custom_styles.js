@@ -1,6 +1,5 @@
 var cookie = require('ep_etherpad-lite/static/js/pad_cookie').padcookie;
 var _ = require('ep_etherpad-lite/static/js/underscore');
-var optionsAlreadyRecovered = false;
 
 if(typeof exports == 'undefined'){
   var exports = this['mymodule'] = {};
@@ -11,6 +10,11 @@ var lintLog = function(value, level){
 }
 
 exports.postAceInit = function(hook, context){
+  /* Stores data we will use throughout the app */
+  if(!pad.plugins) pad.plugins = {};
+  pad.plugins.ep_custom_styles = {};
+  pad.plugins.ep_custom_styles.styleIds = [];
+
   // Listener events
   $('body').on("click", "#options-custom-style-save", function(){
     var padId = pad.getPadId();
@@ -18,11 +22,13 @@ exports.postAceInit = function(hook, context){
     var css = $('#options-custom-style-css').val();
     customStyles.styles.new(padId, styleId, css);
     pad.collabClient.sendMessage(message);
+    applyCustomStyle(context, styleId, true);
   });
 
   // Listen for a click of the paintbrush icon to bring up the popup
   $('body').on('click', '.ep_custom_styles', function(){
     padeditbar.toggleDropDown("customStyles");
+    reDrawSelectedAttributes(context);
   });
 
   // When the Style ID is changed
@@ -51,24 +57,7 @@ exports.postAceInit = function(hook, context){
     var value = $(this).context.checked;
     if(!styleId) return;
 
-    var rep = {};
-    context.ace.callWithAce(function (ace){
-      var saveRep = ace.ace_getRep();
-      rep.selStart = saveRep.selStart;
-      rep.selEnd = saveRep.selEnd;
-    },'customStyles', true);
-
-    if (rep.selStart[0] == rep.selEnd[0] && rep.selStart[1] == rep.selEnd[1]) {
-      console.log("nothing selected");
-      return;
-    }
-
-    context.ace.callWithAce(function (ace){
-console.log("setting with rep", styleId);
-      ace.ace_performSelectionChange(rep.selStart,rep.selEnd,true);
-      ace.ace_setAttributeOnSelection('customStyles-'+styleId, value);
-    },'customStyles', true);
-
+    applyCustomStyle(context, styleId, value);
     $(this).val(0);
   });
 
@@ -119,9 +108,17 @@ exports.handleClientMessage_CUSTOM = function(hook, context){
 
 /* Deals mostly with responses from the server */
 var customStyles = {
+  data: {
+    styles: []
+  },
   drawSelect: function(styleIds){
+    console.warn("HERE");
     console.log("Appending styles to UI", styleIds);
+    console.log(window);
+    pad.plugins.ep_custom_styles.styleIds = styleIds;
+    console.log(customStyles.data.styles);
     $.each(styleIds, function(k,styleId){
+      console.log("pushing", styleId);
       $('#availableStyles').append('<p> \
         <input type=checkbox id="'+styleId+'"> \
         <label for="'+styleId+'">'+styleId+'</label> \
@@ -183,3 +180,46 @@ exports.aceAttribsToClasses = function(hook, context){
     return [context.key];
   }
 }
+
+// Applies a custom Style to a piece of content
+var applyCustomStyle = function(context, styleId, value){
+  console.log("applying style ", styleId, value);
+  var rep = {};
+  context.ace.callWithAce(function (ace){
+    var saveRep = ace.ace_getRep();
+    rep.selStart = saveRep.selStart;
+    rep.selEnd = saveRep.selEnd;
+  },'customStyles', true);
+
+  if (rep.selStart[0] == rep.selEnd[0] && rep.selStart[1] == rep.selEnd[1]) {
+    console.log("nothing selected");
+    return;
+  }
+
+  context.ace.callWithAce(function (ace){
+    console.log("setting with rep", styleId);
+    ace.ace_performSelectionChange(rep.selStart,rep.selEnd,true);
+    ace.ace_setAttributeOnSelection('customStyles-'+styleId, value);
+  },'customStyles', true);
+}
+
+var reDrawSelectedAttributes = function(context){
+  context.ace.callWithAce(function (ace){
+    var rep = rep = ace.ace_getRep();
+    if(rep.selStart[0] == rep.selEnd[0] && rep.selEnd[1] == rep.selStart[1]){
+      return; // don't perform if we don't have anything selected
+    }
+    console.log(pad.plugins.ep_custom_styles.styleIds);
+    $.each(pad.plugins.ep_custom_styles.styleIds, function(k,v){
+      var attrIsApplied = ace.ace_getAttributeOnSelection("customStyles-"+v);
+      console.log("attrIsApplied", attrIsApplied, v)
+      if(attrIsApplied){
+        console.log("Setting "+v +" to enabled");
+        $('#'+v).prop("checked", true);
+      }else{
+        $('#'+v).prop("checked", false);
+      }
+    });
+    // Get Each Available Style
+  },'customStyles', true);
+};
