@@ -205,7 +205,7 @@ var customStyles = {
 
 var reDrawStyles = function(){
   var inner = $('iframe[name="ace_outer"]').contents().find('iframe[name="ace_inner"]')
-  inner.contents().find("head").contents("style").remove(); // maybe make this more strict
+  inner.contents().find("head").contents("style:not(:first)").remove(); // maybe make this more strict
   var message = {};
   message.type = 'customStyles.styles.stylesForPad';
   message.padId = pad.getPadId();
