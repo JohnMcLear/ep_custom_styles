@@ -1,6 +1,7 @@
       var db = require('ep_etherpad-lite/node/db/DB').db,
           fs = require('fs'),
        async = require('../../src/node_modules/async'),
+   Changeset = require("ep_etherpad-lite/static/js/Changeset"),
     settings = require('../../src/node/utils/Settings'),
 customStyles = require('./customStyles').customStyles;
 
@@ -120,3 +121,31 @@ exports.registerRoute = function (hook_name, args, callback) {
   })
 }
 
+
+
+
+/*
+ Handle HTML Exports
+*/
+
+// line, apool,attribLine,text
+exports.getLineHTMLForExport = function (hook, context) {
+  console.warn(context);
+  var header = _analyzeLine(context.attribLine, context.apool);
+  if (header) {
+    var inlineStyle = getInlineStyle(header);
+    return "<" + header + " style=\"" + inlineStyle + "\">" + context.text.substring(1) + "</" + header + ">";
+  }
+}
+
+function _analyzeLine(alineAttrs, apool) {
+  var header = null;
+  if (alineAttrs) {
+    var opIter = Changeset.opIterator(alineAttrs);
+    if (opIter.hasNext()) {
+      var op = opIter.next();
+      header = Changeset.opAttributeValue(op, 'customStyles', apool);
+    }
+  }
+  return header;
+}

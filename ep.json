@@ -9,7 +9,8 @@
         "eejsBlock_body": "ep_custom_styles/client",
         "eejsBlock_styles": "ep_custom_styles/client:eejsBlock_styles",
         "clientVars": "ep_custom_styles/client:clientVars",
-        "expressCreateServer" : "ep_custom_styles/index:registerRoute"
+        "expressCreateServer" : "ep_custom_styles/index:registerRoute",
+        "getLineHTMLForExport": "ep_custom_styles/index"
       },
       "client_hooks": {
         "postAceInit":"ep_custom_styles/static/js/ep_custom_styles:postAceInit",
