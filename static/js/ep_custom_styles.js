@@ -27,7 +27,6 @@ exports.postAceInit = function(hook, context){
       customStyles.styles.new(padId, styleId, css);
     }
     applyCustomStyle(context, styleId, true);
-    padeditbar.toggleDropDown("customStyle");
   });
 
   // Listen for a click of the paintbrush icon to bring up the popup
@@ -197,6 +196,7 @@ var customStyles = {
   },
   error: function(context){
     // console.log(context);
+    $('#newCustomStyle').show(); // can't toggle as it might already be visible!
     if(context.payload.method === "customStyles.error.styleAlreadyExists"){
       $('#options-custom-style-status').text("Style Name Already Exists, use a different Style Name");
     }

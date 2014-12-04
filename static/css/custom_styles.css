@@ -6,6 +6,7 @@
 }
 #options-custom-style-status{
   color:red;
+  font-weight:800;
 }
 .linterror{
   color:red;
