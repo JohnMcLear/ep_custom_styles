@@ -100,7 +100,7 @@ exports.handleClientMessage_CUSTOM = function(hook, context){
   }
   // console.log("context.payload.type", context.payload.type);
   // Handles Custom Messages
-  if(!context.payload) return;
+  if(!context.payload || !context.payload.type) return;
   var customStyle = (context.payload.type.indexOf("custom_style") === 0);
   if(!customStyle) return;
   // console.log("Got a custom style message from server", context.payload);
