@@ -22,11 +22,10 @@ exports.postAceInit = function(hook, context){
     var styleId = $('#options-custom-style-name').val();
     var css = $('#options-custom-style-css').val();
     if(pad.plugins.ep_custom_styles.isUpdating){
-      customStyles.styles.update(padId, styleId, css);
+      customStyles.styles.updateRequest(padId, styleId, css);
     }else{
       customStyles.styles.new(padId, styleId, css);
     }
-    pad.collabClient.sendMessage(message);
     applyCustomStyle(context, styleId, true);
     padeditbar.toggleDropDown("customStyle");
   });
@@ -85,11 +84,7 @@ exports.postAceInit = function(hook, context){
     deleteStyle(styleId);
   });
 
-  var message = {};
-  message.type = 'customStyles.styles.stylesForPad';
-  message.padId = pad.getPadId();
-  console.log("requesting styles", message);
-  pad.collabClient.sendMessage(message);
+  reDrawStyles();
 
   // Register the top bar and new style dropdown
   padeditbar.registerDropdownCommand("customStyles");
@@ -119,13 +114,14 @@ exports.handleClientMessage_CUSTOM = function(hook, context){
 
   var method = context.payload.method.replace("customStyles.styles.","");
   // Perform the related method for this data
+  if(context.payload.method === "customStyles.styles.delete"){
+    console.log("deleting");
+  }
   if(context.payload.method === "customStyles.styles.new"){
     var message = {};
-    message.type = 'customStyles.styles.stylesForPad';
-    message.padId = pad.getPadId();
-    console.log("requesting styles", message);
-    pad.collabClient.sendMessage(message);
+    reDrawStyles();
   }else{
+// console.warn("ebfore", method, context.payload.data, context.payload.request, context);
     customStyles.styles[method](context.payload.data, context.payload.request);
   }
 }
@@ -142,13 +138,7 @@ var customStyles = {
     $.each(styleIds, function(k,styleId){
 
       // If it's not an empty class then don't draw it.
-      console.log("sID", pad.plugins.ep_custom_styles);
-      var WTF = pad.plugins.ep_custom_styles["stest"];
-      console.log("WTF", WTF);
       if(pad.plugins.ep_custom_styles[styleId]){
-// above is broken cake
-
-        console.log("pushing", styleId);
         $('#availableStyles').append('<p> \
           <input type=checkbox id="'+styleId+'"> \
           <label for="'+styleId+'">'+styleId+'</label> \
@@ -162,7 +152,7 @@ var customStyles = {
     stylesForPad: function(styleIds, requestedData){
       if(styleIds){
         pad.plugins.ep_custom_styles.styleIds = styleIds;
-        console.log("Getting CSS of StyleIds", styleIds);
+        // console.log("Getting CSS of StyleIds", styleIds);
         $.each(styleIds, function(k,styleId){
           request("customStyles.styles.get", {styleId: styleId});
 	});
@@ -178,7 +168,7 @@ var customStyles = {
       customStyles.drawSelect();
     },
     new: function(padId, styleId, css){
-      console.log("new", padId, styleId, css)
+      // console.log("new", padId, styleId, css)
       // customStyles.drawSelect();
       request('customStyles.styles.new', {
         padId: padId,
@@ -187,35 +177,54 @@ var customStyles = {
       });
       customStyles.drawSelect();
     },
-    update: function(padId, styleId, css){
-      console.log("update", padId, styleId, css)
+    updateRequest: function(padId, styleId, css){
+      // console.log("update", padId, styleId, css)
       request('customStyles.styles.update', {
         padId: padId,
         css: css,
         styleId: styleId
       });
+    },
+    update: function(data, request){
+      // Message from server tells us to do an update
+      reDrawStyles();
+    },
+    delete: function(data, request){
+      // When a message comes in from the server it hides a style from the available style options
+      $('#'+data.styleId).parent().hide();
+      reDrawStyles();
     }
   },
   error: function(context){
-    console.log(context);
+    // console.log(context);
     if(context.payload.method === "customStyles.error.styleAlreadyExists"){
       $('#options-custom-style-status').text("Style Name Already Exists, use a different Style Name");
     }
   }
 }
 
+var reDrawStyles = function(){
+  var inner = $('iframe[name="ace_outer"]').contents().find('iframe[name="ace_inner"]')
+  inner.contents().find("head").contents("style").remove(); // maybe make this more strict
+  var message = {};
+  message.type = 'customStyles.styles.stylesForPad';
+  message.padId = pad.getPadId();
+  // console.log("requesting styles", message);
+  pad.collabClient.sendMessage(message);
+}
+
 // Requests and Sends information from the socket
 var request = function(method, data){
   var message = data;
   message.type = method;
-  console.log("requesting data or so sending data", message);
+  // console.log("requesting data or so sending data", message);
   pad.collabClient.sendMessage(message);
 }
 
 var drawStyle = function(style){
   var inner = $('iframe[name="ace_outer"]').contents().find('iframe[name="ace_inner"]');
   style = style.replace(".","-"); // BAD TODO CAKE
-  inner.contents().find("head").append("<style>.customStyles"+style+"</style>");
+  if(style) inner.contents().find("head").append("<style class='teststyle'>.customStyles"+style+"</style>");
 }
 
 // Our Custom Style attribute will result in a customStyle:styleId class
@@ -273,6 +282,7 @@ var editStyle = function(styleId){
 var deleteStyle = function(styleId){
   var confirmed = confirm("Are you sure you want to delete this style?  This will remove the style for every pad on this Etherpad instance");
   if(!confirmed) return;
-  request("customStyles.styles.delete", {styleId: styleId});
-  console.log("deleting"+ styleId);  
+  var padId = pad.getPadId();
+  request("customStyles.styles.delete", {styleId: styleId, padId: padId});
+  // console.log("deleting"+ styleId);  
 }

@@ -4,7 +4,7 @@ exports.customStyles = {
   endpoints: ["customStyles.styles.new","customStyles.styles.update", "customStyles.styles.globalDisable", "customStyles.styles.disable", "customStyles.styles.delete", "customStyles.styles.get", "customStyles.styles.stylesForPad", "customStyles.styles.allStyles", "customStyles.styles.disabledStyles"],
   styles: {
     new: function(styleId, css, padId, cb){
-      console.log("Creating new Style", styleId, css, padId || false);
+      // console.log("Creating new Style", styleId, css, padId || false);
       db.get("custom_style_css_"+styleId, function(err, alreadyExists){
         console.warn("alreadyExists", alreadyExists);
         if(alreadyExists){
@@ -20,7 +20,7 @@ exports.customStyles = {
             // if it doesn't already exist then write it to the array
             if(styleIds.indexOf(styleId) === -1){
               styleIds.push(styleId);
-              console.log("new styleIds", styleIds);
+              // console.log("new styleIds", styleIds);
               db.set("custom_styles", styleIds);
             }
 
@@ -41,24 +41,26 @@ exports.customStyles = {
       })
     },
     update: function(styleId, css, cb){
-      console.log("Updating Style", styleId, css || false);
+      // console.log("Updating Style", styleId, css || false);
       db.set("custom_style_css_"+styleId, css);
+      cb(null);
     },
     globalDisable: function(styleId, cb){
-      console.log("Disabling Style", styleId);
+      // console.log("Disabling Style", styleId);
 
     },
     disable: function(styleId, padId, cb){
-      console.log("Disabling Style For Pad", styleId, padId);
+      // console.log("Disabling Style For Pad", styleId, padId);
 
     },
     delete: function(styleId, cb){
-      console.log("Deleting Styles", styleId);
+      // console.log("Deleting Styles", styleId);
       db.set("custom_style_css_"+styleId, "");
+      cb(null);
     },
     get: function(styleId, cb){
       if(!styleId) return cb("no styleId set");
-      console.log("Getting CSS for Style", styleId);
+      // console.log("Getting CSS for Style", styleId);
       db.get("custom_style_css_"+styleId, function(err, value){
         if(err) cb(err);
         cb(null, value);
@@ -66,7 +68,7 @@ exports.customStyles = {
       });
     },
     stylesForPad: function(padId, cb){
-      console.log("Getting StyleIds for PadId", padId);
+      // console.log("Getting StyleIds for PadId", padId);
       db.get("custom_style_association_"+padId, function(err, value){
         if(err) cb(err);
         // console.warn("styles associated with ", padId, value);
@@ -76,18 +78,18 @@ exports.customStyles = {
 
     },
     setStylesForPad: function(padId, styleIds, cb){
-      console.log("Setting StyleIds for PadId", padId, styleIds);
+      // console.log("Setting StyleIds for PadId", padId, styleIds);
       db.set("custom_style_association_"+padId, styleIds);
     },
     allStyles: function(cb){
-      console.log("Getting all available Styles");
+      // console.log("Getting all available Styles");
       db.get("custom_styles", function(err, value){
         if(err) cb(err);
         cb(null, value);
       })
     },
     disabledStyles: function(cb){
-      console.log("Getting all disabled Styles");
+      // console.log("Getting all disabled Styles");
     }
   }
 }

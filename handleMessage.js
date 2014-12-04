@@ -12,7 +12,7 @@ exports.handleMessage = function(hook_name, context, callback){
 
   // only handle endpoints we recognise
   if(customStyles.endpoints.indexOf(context.message.data.type) === -1){
-    console.log("not supported", context.message.data.type, customStyles.endpoints);
+    // console.log("not supported", context.message.data.type, customStyles.endpoints);
     return callback();
   }
 
@@ -26,8 +26,8 @@ exports.handleMessage = function(hook_name, context, callback){
         reply(context.client, "customStyles.error.styleAlreadyExists", message.styleId, request);
         console.error(err);
       }else{
-        console.log("Created new style");
-        broadcast(message.padId, message.type, message, request);
+        // console.log("Created new style");
+        broadcast(message.padId, message.type, message);
       }
     });
     callback([null]);
@@ -35,10 +35,9 @@ exports.handleMessage = function(hook_name, context, callback){
 
   // Update Custom Style
   if (message.type == 'customStyles.styles.update' ){
-    customStyles.styles.update(message.styleId, message.css, function(err, cb){
+    customStyles.styles.update(message.styleId, message.css, function(err, val){
       if(err) console.error(err);
-//      broadcast(message.styleId, message.css, message, request);
-      cb();
+      broadcast(message.padId, message.type, {styleId: message.styleId, css: message.css});
     });
     callback([null]);
   }
@@ -54,9 +53,9 @@ exports.handleMessage = function(hook_name, context, callback){
   
   // Delete a style
   if (message.type == 'customStyles.styles.delete' ){
-    customStyles.styles.delete(message.styleId, function(err, cb){
+    customStyles.styles.delete(message.styleId, function(err, val){
       if(err) console.error(err);
-      cb();
+      broadcast(message.padId, message.type, {styleId: message.styleId});
     });
     callback([null]);
   }
@@ -129,11 +128,12 @@ var reply = function(socket, method, data, request){
   };
 
   blob.data.payload.data = data;
-  console.log("replied with", blob);
+  // console.log("replied with", blob);
   socket.json.send(blob);
 }
 
 var broadcast = function(padId, method, data){
+  console.warn("data", data);
   padMessageHandler.handleCustomObjectMessage({
     type: "COLLABROOM",
     data: {
