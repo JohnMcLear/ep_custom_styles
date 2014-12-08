@@ -129,7 +129,6 @@ exports.stylesForExport = function(hook, padId, cb){
   // Get Each Style from the Database
   customStyles.styles.stylesForPad(padId, function(err, styleIds){
     if(err) console.error(err);
-    console.warn(styleIds);
     var cssString = "";
 
     async.eachSeries(styleIds, function(styleId,callback){
@@ -149,7 +148,6 @@ exports.stylesForExport = function(hook, padId, cb){
       cb(cssString);
     })
   });
-  // cb("zomb", null, "zomg");
 }
 
 // Our Custom Style attribute will result in a customStyle:styleId class
