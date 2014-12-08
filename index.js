@@ -27,7 +27,6 @@ exports.registerRoute = function (hook_name, args, callback) {
 
   // Need to pass auth!
   var apikey = fs.readFileSync("./APIKEY.txt","utf8");
-  console.warn("apikey", apikey);
 
   getEndPoints.map(function(method){
     args.app.get('/pluginAPI/'+method, function(req, res) {
@@ -121,31 +120,42 @@ exports.registerRoute = function (hook_name, args, callback) {
   })
 }
 
-
-
-
 /*
- Handle HTML Exports
+  HTML Exports Styling
 */
 
-// line, apool,attribLine,text
-exports.getLineHTMLForExport = function (hook, context) {
-  console.warn(context);
-  var header = _analyzeLine(context.attribLine, context.apool);
-  if (header) {
-    var inlineStyle = getInlineStyle(header);
-    return "<" + header + " style=\"" + inlineStyle + "\">" + context.text.substring(1) + "</" + header + ">";
+exports.stylesForExport = function(hook, padId, cb){
+
+  // Get Each Style from the Database
+  customStyles.styles.stylesForPad(padId, function(err, styleIds){
+    if(err) console.error(err);
+    console.warn(styleIds);
+    var cssString = "";
+
+    async.eachSeries(styleIds, function(styleId,callback){
+      console.error("styleId", styleId);
+      // get it
+      customStyles.styles.get(styleId, function(err, css){
+        cssString += " " + css;
+      });
+      callback(null, styleId);
+    },function(err){
+      if(err){
+        console.warn("Error getting CSS for this Pad", padId);
+        return("");
+      }
+      if(cssString) cssString = cssString.replace(/\n/g, "");
+      console.error("results", cssString);
+      cb(cssString);
+    })
+  });
+  // cb("zomb", null, "zomg");
+}
+
+// Our Custom Style attribute will result in a customStyle:styleId class
+exports.aceAttribsToClasses = function(hook, context){
+  if(context.key.indexOf("customStyles") > -1){
+    return [context.key];
   }
 }
 
-function _analyzeLine(alineAttrs, apool) {
-  var header = null;
-  if (alineAttrs) {
-    var opIter = Changeset.opIterator(alineAttrs);
-    if (opIter.hasNext()) {
-      var op = opIter.next();
-      header = Changeset.opAttributeValue(op, 'customStyles', apool);
-    }
-  }
-  return header;
-}
