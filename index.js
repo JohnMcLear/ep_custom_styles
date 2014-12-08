@@ -130,7 +130,9 @@ exports.stylesForExport = function(hook, padId, cb){
   customStyles.styles.stylesForPad(padId, function(err, styleIds){
     if(err) console.error(err);
     var cssString = "";
-
+    if(!styleIds){
+      return cb("");
+    }
     async.eachSeries(styleIds, function(styleId,callback){
       console.error("styleId", styleId);
       // get it
