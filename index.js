@@ -159,3 +159,8 @@ exports.aceAttribsToClasses = function(hook, context){
   }
 }
 
+exports.aceAttribClasses = function(hook_name, attr, cb){
+  // I need to return tag:customStyleName
+  attr.sub = 'tag:sub';
+  cb(attr);
+}

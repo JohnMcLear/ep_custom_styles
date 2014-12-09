@@ -286,3 +286,9 @@ var deleteStyle = function(styleId){
   request("customStyles.styles.delete", {styleId: styleId, padId: padId});
   // console.log("deleting"+ styleId);  
 }
+
+exports.aceAttribClasses = function(hook, attr){
+  // console.warn("attr", attr);
+  attr["sub"] = "tag:sub";
+}
+
