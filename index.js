@@ -161,6 +161,35 @@ exports.aceAttribsToClasses = function(hook, context){
 
 exports.aceAttribClasses = function(hook_name, attr, cb){
   // I need to return tag:customStyleName
-  attr.sub = 'tag:sub';
-  cb(attr);
+  console.warn("I should blow up");
+  customStyles.styles.allStyles(function(err, styleIds){
+    if(err) console.error(err);
+    var cssString = "";
+    if(!styleIds){
+      return cb(attr); // no style ids so return original content
+    }
+    // cb(styleIds);
+    // push each styleId to the attr
+    styleIds.forEach(function(styleId){
+      attr[styleId] = 'tag:'+styleId;
+    });
+    console.warn("new attr");
+    cb(attr);
+  });
+
+  // attr.test = 'tag:test';
 }
+
+// Add the props to be supported in export
+exports.exportHtmlAdditionalTags = function(hook, pad, cb){
+  var padId = pad.id;
+  // Get additional tags to support
+  customStyles.styles.stylesForPad(padId, function(err, styleIds){
+    if(err) console.error(err);
+    var cssString = "";
+    if(!styleIds){
+      return cb("");
+    }
+    cb(styleIds);
+  });
+};

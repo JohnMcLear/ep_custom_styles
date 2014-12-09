@@ -3,22 +3,25 @@
     {
       "name": "ep_custom_styles",
       "hooks": {
-        "eejsBlock_editbarMenuLeft": "ep_custom_styles/client",
-        "handleMessage": "ep_custom_styles/handleMessage",
+        "eejsBlock_editbarMenuLeft" : "ep_custom_styles/client",
+        "handleMessage" : "ep_custom_styles/handleMessage",
         "eejsBlock_scripts": "ep_custom_styles/client",
-        "eejsBlock_body": "ep_custom_styles/client",
-        "eejsBlock_styles": "ep_custom_styles/client:eejsBlock_styles",
-        "clientVars": "ep_custom_styles/client:clientVars",
+        "eejsBlock_body" : "ep_custom_styles/client",
+        "eejsBlock_styles" : "ep_custom_styles/client:eejsBlock_styles",
+        "clientVars" : "ep_custom_styles/client:clientVars",
         "expressCreateServer" : "ep_custom_styles/index:registerRoute",
         "stylesForExport" : "ep_custom_styles/index",
         "aceAttribsToClasses": "ep_custom_styles/index",
-        "aceAttribClasses":"ep_custom_styles/index"
+        "aceAttribClasses" : "ep_custom_styles/index",
+        "exportHtmlAdditionalTags" : "ep_custom_styles/index"
       },
       "client_hooks": {
-        "postAceInit":"ep_custom_styles/static/js/ep_custom_styles:postAceInit",
-        "handleClientMessage_CUSTOM":"ep_custom_styles/static/js/ep_custom_styles",
-        "aceAttribsToClasses": "ep_custom_styles/static/js/ep_custom_styles",
-        "aceAttribClasses":"ep_custom_styles/static/js/ep_custom_styles"
+        "postAceInit" : "ep_custom_styles/static/js/ep_custom_styles:postAceInit",
+        "handleClientMessage_CUSTOM" : "ep_custom_styles/static/js/ep_custom_styles",
+        "aceAttribsToClasses" : "ep_custom_styles/static/js/ep_custom_styles",
+        "aceAttribClasses" : "ep_custom_styles/static/js/ep_custom_styles",
+        "collectContentPre" : "ep_custom_styles/static/js/ep_custom_styles",
+        "collectContentPost" : "ep_custom_styles/static/js/ep_custom_styles"
       }
     }
   ]

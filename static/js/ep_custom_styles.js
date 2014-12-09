@@ -1,4 +1,3 @@
-var cookie = require('ep_etherpad-lite/static/js/pad_cookie').padcookie;
 var _ = require('ep_etherpad-lite/static/js/underscore');
 
 if(typeof exports == 'undefined'){
@@ -223,13 +222,12 @@ var request = function(method, data){
 
 var drawStyle = function(style){
   var inner = $('iframe[name="ace_outer"]').contents().find('iframe[name="ace_inner"]');
-  style = style.replace(".","-"); // BAD TODO CAKE
-  if(style) inner.contents().find("head").append("<style class='teststyle'>.customStyles"+style+"</style>");
+  if(style) inner.contents().find("head").append("<style class='"+style+"'>"+style+"</style>");
 }
 
 // Our Custom Style attribute will result in a customStyle:styleId class
 exports.aceAttribsToClasses = function(hook, context){
-  if(context.key.indexOf("customStyles") > -1){
+  if(context.key){
     return [context.key];
   }
 }
@@ -250,7 +248,7 @@ var applyCustomStyle = function(context, styleId, value){
 
   context.ace.callWithAce(function (ace){
     ace.ace_performSelectionChange(rep.selStart,rep.selEnd,true);
-    ace.ace_setAttributeOnSelection('customStyles-'+styleId, value);
+    ace.ace_setAttributeOnSelection(styleId, value);
   },'customStyles', true);
 }
 
@@ -261,7 +259,7 @@ var reDrawSelectedAttributes = function(context){
       return; // don't perform if we don't have anything selected
     }
     $.each(pad.plugins.ep_custom_styles.styleIds, function(k,v){
-      var attrIsApplied = ace.ace_getAttributeOnSelection("customStyles-"+v);
+      var attrIsApplied = ace.ace_getAttributeOnSelection(v);
       if(attrIsApplied){ // attribute is applied to this selection
         $('#'+v).prop("checked", true);
       }else{
@@ -287,8 +285,35 @@ var deleteStyle = function(styleId){
   // console.log("deleting"+ styleId);  
 }
 
-exports.aceAttribClasses = function(hook, attr){
-  // console.warn("attr", attr);
-  attr["sub"] = "tag:sub";
+exports.aceAttribClasses = function(hook, attr, cb){
+  if(!pad.plugins || !pad.plugins.ep_custom_styles){
+    return cb(attr);
+  }
+  $.each(pad.plugins.ep_custom_styles.styleIds, function(k,styleId){
+    attr[styleId] = "tag:"+styleId;
+  });
 }
+
+exports.collectContentPre = function(hook, context){
+  var tname = context.tname;
+  var state = context.state;
+  var lineAttributes = state.lineAttributes
+  var tagIndex = tname;
+  if(pad.plugins.ep_custom_styles.styleIds.indexOf(tname) !== -1){
+    context.cc.doAttrib(state, tname);
+  }
+};
+
+exports.collectContentPost = function(hook, context){
+  var tname = context.tname;
+  var state = context.state;
+  var lineAttributes = state.lineAttributes
+  var tagIndex = tname;
+
+  if(tagIndex >= 0){
+    if(pad.plugins.ep_custom_styles.styleIds.indexOf(tname) !== -1){
+      delete lineAttributes[tname];
+    }
+  }
+};
 
