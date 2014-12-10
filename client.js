@@ -51,6 +51,18 @@ exports.eejsBlock_styles = function (hook_name, args, cb) {
 };
 
 exports.clientVars = function(hook, context, callback) {
+  var padId = context.pad.id;
   var pluginSettings = settings.ep_custom_styles;
-  return callback({});
+
+  // Get Each Style from the Database
+  // This is required to avoid a race condition in the timeslider
+  customStyles.styles.stylesForPad(padId, function(err, styleIds){
+    if(err) console.error(err);
+    var cssString = "";
+    if(!styleIds){
+      return callback("");
+    }
+    var custom_style_styleIds = {ep_custom_styles_styleIds: styleIds};
+    return callback(custom_style_styleIds);
+  });
 };

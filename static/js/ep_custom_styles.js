@@ -311,27 +311,21 @@ var deleteStyle = function(styleId){
 }
 
 exports.aceAttribClasses = function(hook, attr, cb){
-  // socket is only available on timeslider
-  if(typeof pad == "undefined"){
-    var data = {
-      type : 'COLLABROOM',
-      component : 'pad',
-      data: {
-        padId: "test",
-        type: "customStyles.styles.stylesForPad" 
-      }
-    }
-    socket.send(data);
-  }
-  
   if(!clientVars.plugins.plugins || !clientVars.plugins.plugins.ep_custom_styles || !clientVars.plugins.plugins.ep_custom_styles.styleIds){
-    return;
-  }
-  else{
+    
+    if(clientVars.ep_custom_styles_styleIds){ // used by the timeslider
+      $.each(clientVars.ep_custom_styles_styleIds, function(k,styleId){
+        attr[styleId] = "tag:"+styleId;
+      });
+      return cb(null, attr);
+    }else{
+      return cb(null, attr);
+    }
+  }else{
     $.each(clientVars.plugins.plugins.ep_custom_styles.styleIds, function(k,styleId){
       attr[styleId] = "tag:"+styleId;
     });
-    return cb(attr);
+    return cb(null, attr);
   }
 }
 
