@@ -1,4 +1,5 @@
 var db = require('ep_etherpad-lite/node/db/DB').db;
+var customStyles = require('./customStyles').customStyles;
 
 exports.customStyles = {
   endpoints: ["customStyles.styles.new","customStyles.styles.update", "customStyles.styles.globalDisable", "customStyles.styles.disable", "customStyles.styles.delete", "customStyles.styles.get", "customStyles.styles.stylesForPad", "customStyles.styles.allStyles", "customStyles.styles.disabledStyles"],

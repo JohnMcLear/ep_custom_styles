@@ -13,11 +13,13 @@
         "stylesForExport" : "ep_custom_styles/index",
         "aceAttribsToClasses": "ep_custom_styles/index",
         "aceAttribClasses" : "ep_custom_styles/index",
-        "exportHtmlAdditionalTags" : "ep_custom_styles/index"
+        "exportHtmlAdditionalTags" : "ep_custom_styles/index",
+	"eejsBlock_timesliderStyles" : "ep_custom_styles/client"
       },
       "client_hooks": {
         "postAceInit" : "ep_custom_styles/static/js/ep_custom_styles:postAceInit",
         "handleClientMessage_CUSTOM" : "ep_custom_styles/static/js/ep_custom_styles",
+        "handleClientTimesliderMessage_CUSTOM" : "ep_custom_styles/static/js/ep_custom_styles",
         "aceAttribsToClasses" : "ep_custom_styles/static/js/ep_custom_styles",
         "aceAttribClasses" : "ep_custom_styles/static/js/ep_custom_styles",
         "collectContentPre" : "ep_custom_styles/static/js/ep_custom_styles",

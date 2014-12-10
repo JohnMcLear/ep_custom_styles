@@ -10,17 +10,17 @@ var lintLog = function(value, level){
 
 exports.postAceInit = function(hook, context){
   /* Stores data we will use throughout the app */
-  if(!pad.plugins) pad.plugins = {};
-  pad.plugins.ep_custom_styles = {};
-  pad.plugins.ep_custom_styles.styleIds = [];
-  pad.plugins.ep_custom_styles.styles = {};
+  if(!clientVars.plugins.plugins) clientVars.plugins.plugins = {};
+  clientVars.plugins.plugins.ep_custom_styles;
+  clientVars.plugins.plugins.ep_custom_styles.styleIds = [];
+  clientVars.plugins.plugins.ep_custom_styles.styles = {};
 
   // Listener events
   $('body').on("click", "#options-custom-style-save", function(){
     var padId = pad.getPadId();
     var styleId = $('#options-custom-style-name').val();
     var css = $('#options-custom-style-css').val();
-    if(pad.plugins.ep_custom_styles.isUpdating){
+    if(clientVars.plugins.plugins.ep_custom_styles.isUpdating){
       customStyles.styles.updateRequest(padId, styleId, css);
     }else{
       customStyles.styles.new(padId, styleId, css);
@@ -64,7 +64,7 @@ exports.postAceInit = function(hook, context){
   });
 
   $('#customStyles').on('click', '#newStyle', function(){
-    pad.plugins.ep_custom_styles.isUpdating = false;
+    clientVars.plugins.plugins.ep_custom_styles.isUpdating = false;
     padeditbar.toggleDropDown("newCustomStyle");
   });
 
@@ -89,6 +89,10 @@ exports.postAceInit = function(hook, context){
   padeditbar.registerDropdownCommand("newCustomStyle");
   // This is called with padeditbar.toggleDropDown("customStyles") etc.
 }
+
+exports.handleClientTimesliderMessage_CUSTOM = function(hook, context){
+  exports.handleClientMessage_CUSTOM(hook, context.payload);
+};
 
 exports.handleClientMessage_CUSTOM = function(hook, context){
   // Handles Custom Object Messages
@@ -119,7 +123,6 @@ exports.handleClientMessage_CUSTOM = function(hook, context){
     var message = {};
     reDrawStyles();
   }else{
-// console.warn("ebfore", method, context.payload.data, context.payload.request, context);
     customStyles.styles[method](context.payload.data, context.payload.request);
   }
 }
@@ -130,13 +133,13 @@ var customStyles = {
     styles: []
   },
   drawSelect: function(){
-    // pad.plugins.ep_custom_styles.styleIds = styleIds;
-    var styleIds = pad.plugins.ep_custom_styles.styleIds;
+    // clientVars.plugins.plugins.ep_custom_styles.styleIds = styleIds;
+    var styleIds = clientVars.plugins.plugins.ep_custom_styles.styleIds;
     $('#availableStyles').html("");
     $.each(styleIds, function(k,styleId){
 
       // If it's not an empty class then don't draw it.
-      if(pad.plugins.ep_custom_styles[styleId]){
+      if(clientVars.plugins.plugins.ep_custom_styles[styleId]){
         $('#availableStyles').append('<p> \
           <input type=checkbox id="'+styleId+'"> \
           <label for="'+styleId+'">'+styleId+'</label> \
@@ -149,7 +152,7 @@ var customStyles = {
   styles: {
     stylesForPad: function(styleIds, requestedData){
       if(styleIds){
-        pad.plugins.ep_custom_styles.styleIds = styleIds;
+        clientVars.plugins.plugins.ep_custom_styles.styleIds = styleIds;
         // console.log("Getting CSS of StyleIds", styleIds);
         $.each(styleIds, function(k,styleId){
           request("customStyles.styles.get", {styleId: styleId});
@@ -161,7 +164,7 @@ var customStyles = {
       // When we reply to the client we tell it the styleId of the style it requested.
       // This is the requestedData object, we might use it for other things so I kept it vague
       var styleId = requestedData[0];
-      pad.plugins.ep_custom_styles[styleId] = style;
+      clientVars.plugins.plugins.ep_custom_styles[styleId] = style;
       drawStyle(style);
       customStyles.drawSelect();
     },
@@ -209,7 +212,19 @@ var reDrawStyles = function(){
   message.type = 'customStyles.styles.stylesForPad';
   message.padId = pad.getPadId();
   // console.log("requesting styles", message);
-  pad.collabClient.sendMessage(message);
+
+  if(typeof pad == "undefined"){
+    var data = {
+      type : 'COLLABROOM',
+      component : 'pad',
+      data: message
+    }
+    socket.send(message);
+  }
+  else{
+    pad.collabClient.sendMessage(message);
+  }
+
 }
 
 // Requests and Sends information from the socket
@@ -217,7 +232,17 @@ var request = function(method, data){
   var message = data;
   message.type = method;
   // console.log("requesting data or so sending data", message);
-  pad.collabClient.sendMessage(message);
+  if(typeof pad == "undefined"){
+    var data = {
+      type : 'COLLABROOM',
+      component : 'pad',
+      data: message
+    }
+    socket.send(message);
+  }
+  else{
+    pad.collabClient.sendMessage(message);
+  }
 }
 
 var drawStyle = function(style){
@@ -258,7 +283,7 @@ var reDrawSelectedAttributes = function(context){
     if(rep.selStart[0] == rep.selEnd[0] && rep.selEnd[1] == rep.selStart[1]){
       return; // don't perform if we don't have anything selected
     }
-    $.each(pad.plugins.ep_custom_styles.styleIds, function(k,v){
+    $.each(clientVars.plugins.plugins.ep_custom_styles.styleIds, function(k,v){
       var attrIsApplied = ace.ace_getAttributeOnSelection(v);
       if(attrIsApplied){ // attribute is applied to this selection
         $('#'+v).prop("checked", true);
@@ -273,8 +298,8 @@ var reDrawSelectedAttributes = function(context){
 var editStyle = function(styleId){
   padeditbar.toggleDropDown("newCustomStyle");
   $('#options-custom-style-name').val(styleId);
-  $('#options-custom-style-css').val(pad.plugins.ep_custom_styles[styleId]);
-  pad.plugins.ep_custom_styles.isUpdating = true;
+  $('#options-custom-style-css').val(clientVars.plugins.plugins.ep_custom_styles[styleId]);
+  clientVars.plugins.plugins.ep_custom_styles.isUpdating = true;
 }
 
 var deleteStyle = function(styleId){
@@ -286,12 +311,28 @@ var deleteStyle = function(styleId){
 }
 
 exports.aceAttribClasses = function(hook, attr, cb){
-  if(!pad.plugins || !pad.plugins.ep_custom_styles){
+  // socket is only available on timeslider
+  if(typeof pad == "undefined"){
+    var data = {
+      type : 'COLLABROOM',
+      component : 'pad',
+      data: {
+        padId: "test",
+        type: "customStyles.styles.stylesForPad" 
+      }
+    }
+    socket.send(data);
+  }
+  
+  if(!clientVars.plugins.plugins || !clientVars.plugins.plugins.ep_custom_styles || !clientVars.plugins.plugins.ep_custom_styles.styleIds){
+    return;
+  }
+  else{
+    $.each(clientVars.plugins.plugins.ep_custom_styles.styleIds, function(k,styleId){
+      attr[styleId] = "tag:"+styleId;
+    });
     return cb(attr);
   }
-  $.each(pad.plugins.ep_custom_styles.styleIds, function(k,styleId){
-    attr[styleId] = "tag:"+styleId;
-  });
 }
 
 exports.collectContentPre = function(hook, context){
@@ -299,7 +340,7 @@ exports.collectContentPre = function(hook, context){
   var state = context.state;
   var lineAttributes = state.lineAttributes
   var tagIndex = tname;
-  if(pad.plugins.ep_custom_styles.styleIds.indexOf(tname) !== -1){
+  if(clientVars.plugins.plugins.ep_custom_styles.styleIds.indexOf(tname) !== -1){
     context.cc.doAttrib(state, tname);
   }
 };
@@ -311,7 +352,7 @@ exports.collectContentPost = function(hook, context){
   var tagIndex = tname;
 
   if(tagIndex >= 0){
-    if(pad.plugins.ep_custom_styles.styleIds.indexOf(tname) !== -1){
+    if(clientVars.plugins.plugins.ep_custom_styles.styleIds.indexOf(tname) !== -1){
       delete lineAttributes[tname];
     }
   }
