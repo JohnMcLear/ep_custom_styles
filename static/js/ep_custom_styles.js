@@ -277,6 +277,7 @@ var applyCustomStyle = function(context, styleId, value){
   },'customStyles', true);
 }
 
+// Checks the UI if an attribute is enabled on a highlighted portion of text
 var reDrawSelectedAttributes = function(context){
   context.ace.callWithAce(function (ace){
     var rep = rep = ace.ace_getRep();
@@ -295,6 +296,7 @@ var reDrawSelectedAttributes = function(context){
   },'customStyles', true);
 };
 
+// Show UI to edit a style
 var editStyle = function(styleId){
   padeditbar.toggleDropDown("newCustomStyle");
   $('#options-custom-style-name').val(styleId);
@@ -302,6 +304,7 @@ var editStyle = function(styleId){
   clientVars.plugins.plugins.ep_custom_styles.isUpdating = true;
 }
 
+// Prompt and perform deletion of a style
 var deleteStyle = function(styleId){
   var confirmed = confirm("Are you sure you want to delete this style?  This will remove the style for every pad on this Etherpad instance");
   if(!confirmed) return;
@@ -311,8 +314,13 @@ var deleteStyle = function(styleId){
 }
 
 exports.aceAttribClasses = function(hook, attr, cb){
+
+  // NOTE: Does NOT affect order that attributes are applied to classes.
+
+  // If it's not set at all
   if(!clientVars.plugins.plugins || !clientVars.plugins.plugins.ep_custom_styles || !clientVars.plugins.plugins.ep_custom_styles.styleIds){
-    
+
+    // Does the timeslider have the values?    
     if(clientVars.ep_custom_styles_styleIds){ // used by the timeslider
       $.each(clientVars.ep_custom_styles_styleIds, function(k,styleId){
         attr[styleId] = "tag:"+styleId;
