@@ -1,8 +1,8 @@
       var db = require('ep_etherpad-lite/node/db/DB').db,
           fs = require('fs'),
-       async = require('../../src/node_modules/async'),
+       async = require('ep_etherpad-lite/node_modules/async'),
    Changeset = require("ep_etherpad-lite/static/js/Changeset"),
-    settings = require('../../src/node/utils/Settings'),
+    settings = require('ep_etherpad-lite/src/node/utils/Settings'),
 customStyles = require('./customStyles').customStyles;
 
 // Remove cache for this procedure
