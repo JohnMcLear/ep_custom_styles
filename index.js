@@ -2,7 +2,7 @@
           fs = require('fs'),
        async = require('ep_etherpad-lite/node_modules/async'),
    Changeset = require("ep_etherpad-lite/static/js/Changeset"),
-    settings = require('ep_etherpad-lite/src/node/utils/Settings'),
+    settings = require('ep_etherpad-lite/node/utils/Settings'),
 customStyles = require('./customStyles').customStyles;
 
 // Remove cache for this procedure
