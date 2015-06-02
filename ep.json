@@ -2,6 +2,7 @@
   "parts":[
     {
       "name": "ep_custom_styles",
+      "post": ["ep_etherpad-lite/static"],
       "hooks": {
         "eejsBlock_editbarMenuLeft": "ep_custom_styles/client",
         "handleMessage": "ep_custom_styles/handleMessage",
