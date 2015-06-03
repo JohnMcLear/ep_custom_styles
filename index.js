@@ -2,7 +2,7 @@
           fs = require('fs'),
        async = require('ep_etherpad-lite/node_modules/async'),
    Changeset = require("ep_etherpad-lite/static/js/Changeset"),
-    settings = require('ep_etherpad-lite/src/node/utils/Settings'),
+    settings = require('ep_etherpad-lite/node/utils/Settings'),
 customStyles = require('./customStyles').customStyles;
 
 // Remove cache for this procedure
@@ -12,7 +12,14 @@ var getEndPoints = [
   "customStyles.styles.get",
   "customStyles.styles.stylesForPad",
   "customStyles.styles.allStyles",
-  "customStyles.styles.disabledStyles"
+  "customStyles.styles.disabledStyles",
+  "customStyles.styles.new",
+  "customStyles.styles.update",
+  "customStyles.styles.globalDisable",
+  "customStyles.styles.disable",
+  "customStyles.styles.delete",
+  "customStyles.styles.setStylesForPad"
+
 ];
 
 var setEndPoints = [
@@ -43,7 +50,7 @@ exports.registerRoute = function (hook_name, args, callback) {
       // object of requested params = req.query
 
       if(method === "new"){
-        customStyles.styles[method](req.query.styleId, req.query.css, req.padId, function(err, value){
+        customStyles.styles[method](req.query.styleId, req.query.css, req.query.padId, function(err, value){ //this was using req.padId, which wasn't working
           if(err) console.error(err);
           res.send(value);
         });
@@ -92,7 +99,7 @@ exports.registerRoute = function (hook_name, args, callback) {
       }
 
       if(method === "setStylesForPad"){
-        customStyles.styles[method](req.query.padId, styleIds, function(err, value){
+        customStyles.styles[method](req.query.padId, req.query.styleIds, function(err, value){
           if(err) console.error(err);
           res.send(value);
         });

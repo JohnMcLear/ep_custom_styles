@@ -79,7 +79,12 @@ exports.customStyles = {
     },
     setStylesForPad: function(padId, styleIds, cb){
       // console.log("Setting StyleIds for PadId", padId, styleIds);
+      var styleIdsType = Object.prototype.toString.call(styleIds);
+      if(styleIdsType === "[object String]") {
+        styleIds = [styleIds];
+      }
       db.set("custom_style_association_"+padId, styleIds);
+      cb(null, "set styles!");
     },
     allStyles: function(cb){
       // console.log("Getting all available Styles");
