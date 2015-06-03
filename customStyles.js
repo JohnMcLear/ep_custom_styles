@@ -4,7 +4,6 @@ exports.customStyles = {
   endpoints: ["customStyles.styles.new","customStyles.styles.update", "customStyles.styles.globalDisable", "customStyles.styles.disable", "customStyles.styles.delete", "customStyles.styles.get", "customStyles.styles.stylesForPad", "customStyles.styles.allStyles", "customStyles.styles.disabledStyles"],
   styles: {
     new: function(styleId, css, padId, cb){
-      console.warn("New style:", styleId, css, padId);
       // console.log("Creating new Style", styleId, css, padId || false);
       db.get("custom_style_css_"+styleId, function(err, alreadyExists){
         console.warn("alreadyExists", alreadyExists);
