@@ -4,6 +4,7 @@ exports.customStyles = {
   endpoints: ["customStyles.styles.new","customStyles.styles.update", "customStyles.styles.globalDisable", "customStyles.styles.disable", "customStyles.styles.delete", "customStyles.styles.get", "customStyles.styles.stylesForPad", "customStyles.styles.allStyles", "customStyles.styles.disabledStyles"],
   styles: {
     new: function(styleId, css, padId, cb){
+      console.warn("New style:", styleId, css, padId);
       // console.log("Creating new Style", styleId, css, padId || false);
       db.get("custom_style_css_"+styleId, function(err, alreadyExists){
         console.warn("alreadyExists", alreadyExists);
@@ -79,7 +80,12 @@ exports.customStyles = {
     },
     setStylesForPad: function(padId, styleIds, cb){
       // console.log("Setting StyleIds for PadId", padId, styleIds);
+      var styleIdsType = Object.prototype.toString.call(styleIds);
+      if(styleIdsType === "[object String]") {
+        styleIds = [styleIds];
+      }
       db.set("custom_style_association_"+padId, styleIds);
+      cb(null, "set styles!");
     },
     allStyles: function(cb){
       // console.log("Getting all available Styles");
